@@ -1,51 +1,53 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from '@/hooks/useTheme';
 import { 
   User, Briefcase, GraduationCap, Code, BookOpen, Award,
-  Sun, Moon, Download, Github, Linkedin, Mail, Phone, 
-  MapPin, Globe, ChevronDown, Menu, X
+  Github, Mail, Phone, 
+  MapPin, Globe, ChevronDown, X, ExternalLink, 
+  ChevronRight, Calendar
 } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 
-// 个人信息
-const personalInfo = {
-  name: "许焱",
-  title: "大模型算法工程师",
-  bio: "本人性格沉稳，正直忠诚，具有良好的沟通协助能力，能与内外部团队高效配合，推动项目落地。拥有丰富的卫星定轨自动化、大气波导反演系统开发经验，并在大模型技术领域有深入研究。",
-  avatar: "/src/assets/images/avatar.png",
-  contact: [
-    { type: "email", value: "xuyan4811@outlook.com", icon: <Mail size={20} /> },
-    { type: "phone", value: "18763861027", icon: <Phone size={20} /> },
-    { type: "location", value: "山东省泰安市", icon: <MapPin size={20} /> },
-    { type: "giee", value: "gitee.com/xuyan-breeze", icon: <Globe size={20} /> }
-  ],
-  personalDetails: [
-    { label: "出生年月", value: "1999.08.18" },
-    { label: "民族", value: "汉族" },
-    { label: "籍贯", value: "山东省泰安市" },
-    { label: "政治面貌", value: "中共党员" },
-    { label: "学历", value: "硕士" }
+  // 个人信息
+  const personalInfo = {
+    name: "许焱",
+    title: "大模型算法工程师",
+    avatar: "src/images/许焱.jpg",
+    // 按照要求的顺序排列：出生年月、民族、籍贯、政治面貌、学历、邮箱、电话、gitee
+    details: [
+    { label: "出生年月", value: "1999.08.18", type: "birthday", icon: <Calendar size={20} /> },
+    { label: "民族", value: "汉族", type: "nationality", icon: <User size={20} /> },
+    { label: "籍贯", value: "山东省泰安市", type: "location", icon: <MapPin size={20} /> },
+    { label: "政治面貌", value: "中共党员", type: "political", icon: <User size={20} /> },
+    { label: "学历", value: "硕士", type: "education", icon: <GraduationCap size={20} /> },
+    { label: "邮箱", value: "xuyan4811@outlook.com", type: "email", icon: <Mail size={20} /> },
+    { label: "电话（WeChat）", value: "18763861027", type: "phone", icon: <Phone size={20} /> },
+    { 
+      label: "Gitee", 
+      value: "gitee.com/xuyan-breeze", 
+      type: "gitee", 
+      icon: <Globe size={20} />,
+      url: "https://gitee.com/xuyan-breeze"
+    }
   ]
 };
 
-// 工作经历
-const workExperience = [
-  {
-    id: 1,
-    company: "天津云遥宇航科技有限公司",
-    position: "算法工程师",
-    period: "2024.06-至今",
-    description: "负责低轨卫星精密定轨全流程自动化及相关系统开发",
-    achievements: [
-      "独立开发 GPANDA & NPANDA 定轨自动化脚本（Python），将人工 1h 手动流程压缩至 4 min 无人值守运行，支撑Linux服务器 30+ 颗云遥卫星定轨业务化运行",
-      "独立开发\"发射即更新\"卫星参数脚本（Python），将人工1h 手动配置流程压缩至5s，支撑 26 余颗卫星零差错解算数据",
-      "构建低轨卫星业务健康监测与多维精度评估体系，保障业务稳定运行，出错率降低80%",
-      "自研并开发大气波导反演系统（Python）：基于 ERA5 与掩星干湿廓线，实现接地/悬空波导自动识别与绘图",
-      "作为技术骨干参与军工重点项目，完成项目GNSS 掩星质量评估程序（Fortran）、自动化脚本（Python）和软件GUI（tkinter）的开发"
-    ]
-  }
-];
+  // 工作经历
+  const workExperience = [
+    {
+      id: 1,company: "天津云遥宇航科技有限公司",
+      position: "算法工程师",
+      period: "2024.06-至今",
+      achievements: [
+        "独立开发 GPANDA & NPANDA 定轨自动化脚本（Python），将人工 1h 手动流程压缩至 4 min 无人值守运行，支撑Linux服务器 30+ 颗云遥卫星定轨业务化运行",
+        "独立开发\"发射即更新\"卫星参数脚本（Python），将人工1h 手动配置流程压缩至5s，已支撑 26 余颗卫星零差错解算数据",
+        "构建低轨卫星业务健康监测（系统文件准备、数据质量和时效性检查）与多维精度评估（残差、事后和重叠弧段分析）体系，保障业务稳定运行，出错率降低80%",
+        "熟悉 NetCDF、GRIB 等气象标准格式，可独立完成ERA5（气压层 + 模式层）、无线电探空、GNSS 掩星、GFS 预报场等数据的下载、读写、质控、时间/空间插值及可视化",
+        "自研并开发大气波导反演系统（Python）：基于 ERA5 与掩星干湿廓线，实现接地/悬空波导自动识别与绘图",
+        "作为技术骨干参与军工重点项目，完成项目GNSS 掩星质量评估程序（Fortran）、自动化脚本（Python）和软件GUI（tkinter）的开发，具备银河麒麟（国防版）服务器本地化部署经验，撰写验收文档，项目一次性通过专家评审并获\"优秀\"评级"
+      ]
+    }
+  ];
 
 // 教育背景
 const education = [
@@ -123,8 +125,7 @@ const projects = [
   {
     id: 3,
     title: "大气波导反演系统",
-    role: "自研开发",
-    period: "2024年9月（工作期间）",
+    role: "自研开发",period: "2024年9月（工作期间）",
     description: "自研并开发大气波导反演系统，基于ERA5与掩星干湿廓线，实现接地/悬空波导自动识别与绘图",
     technologies: ["Python", "气象数据处理", "数据可视化"],
     outcomes: "实现了大气波导现象的自动识别与可视化展示"
@@ -169,7 +170,7 @@ const publications = [
     authors: "许焱,刘智敏,徐保朋等",
     conference: "第十三届中国卫星导航年会论文集——S04星轨道与精密定位",
     year: 2022,pages: "81-88",
-    link: "DOI:10.26914/c.cnkihy.2022.001199",
+    link: "https://kns.cnki.net/kcms2/article/abstract?v=krTYG2tdvzqv1gxaMHR4d3lVzzIZ_YWIzkIUjPubXxyor2OM9rvoPKk1QBWRTq_pdKf8GBfzXkOTZJzcP3gMnewC1Y-E0pG0mfI8LXfUnUwMSZdWNqbwqXwcPZGvydPdO0djJbeVBWBzmmCU5feuHJ7nUBFjXK5u-TL91SmVSu2sJOG98fvZi0RCcSmQnvkpVquphoyIXXqLidaXfGqs-Q==&uniplatform=NZKPT",
     note: "会议论文"
   },
   {
@@ -239,31 +240,36 @@ const technicalSkills = [
     { name: "MATLAB", level: 85 }
   ]},
   { category: "大模型技术", skills: [
-    { name: "LoRA微调 (peft + transformers)", level: 90 },
-    { name: "Unsloth/LLaMA-Factory框架", level: 85 },
-    { name: "模型部署与量化", level: 88 },
-    { name: "TensorRT加速", level: 82 },
-    { name: "Ollama/vLLM/LM Studio", level: 85 }
+    { name: "Unsloth + LoRA微调", level: 90 },
+    { name: "LLaMA-Factory + LoRA微调", level: 85 },
+    { name: "Ollama模型本地化部署与服务", level: 92 },
+    { name: "vLLM模型本地化部署与服务", level: 88 },
+		{ name: "LM Studio模型本地化部署与服务", level: 90 },
   ]},
   { category: "大模型Agent工具", skills: [
     { name: "Dify平台", level: 85 },
     { name: "LangChain Agent", level: 80 },
     { name: "零代码/低代码智能体搭建", level: 83 },
-    { name: "自动化工作流设计", level: 88 }
+    { name: "自动化工作流设计", level: 85 }
   ]},
   { category: "系统与开发工具", skills: [
-    { name: "Linux系统", level: 90 },
-    { name: "VS Code/PyCharm", level: 95 },
-    { name: "Git/GitHub/Gitee", level: 85 },
-    { name: "Docker容器化", level: 80 },
-    { name: "跨平台远程开发", level: 85 }
+    { name: "多系统调试与开发 (Linux/WSL/Windows)", level: 90 },
+    { name: "VS Code/Cursor/PyCharm/Visual Studio", level: 95 },
+    { name: "Git管理GitHub/Gitee", level: 85 },
+    { name: "Docker容器化与编排", level: 80 }
   ]},
-  { category: "科研与办公", skills: [
+  { category: "跨平台云端同步工具", skills: [
+    { name: "Onedrive+WebDAV+Zotero文献管理", level: 85 },
+    { name: "WebDAV+Jpolin多平台笔记同步", level: 90 },
+    { name: "Markdown文档编写", level: 88 },
+    { name: "跨设备数据同步", level: 85 }
+  ]},
+  { category: "科研绘图与办公", skills: [
     { name: "Microsoft Office", level: 90 },
-    { name: "LaTex + MathType", level: 85 },
-    { name: "Origin/ArcMap/Visio", level: 88 },
-    { name: "Photoshop", level: 80 },
-    { name: "SCI论文写作与发表", level: 85 }
+    { name: "Adobe Acrobat", level: 90 },
+    { name: "LaTex + MathType公式编辑", level: 85 },
+    { name: "Origin/ArcMap/Visio绘图", level: 92 },
+    { name: "Photoshop图像处理", level: 80 }
   ]}
 ];
 
@@ -271,7 +277,7 @@ const technicalSkills = [
 const selfEvaluation = [
   {
     category: "性格特征",
-    content: "本人性格沉稳，正直忠诚，具有良好的沟通协助能力，能与内外部团队高效配合，推动项目落地。"
+    content: "本人性格乐观开朗，正直忠诚，具有良好的沟通协助能力，能与内外部团队高效配合，推动项目落地。"
   },
   {
     category: "学习能力",
@@ -288,7 +294,7 @@ const selfEvaluation = [
 ];
 
 // 生成雷达图数据
-const generateRadarData = (selectedSkills) => {
+const generateRadarData = (selectedSkills: Array<{ name: string; level: number }>) => {
   return selectedSkills.map(skill => ({
     subject: skill.name,
     A: skill.level,
@@ -299,459 +305,237 @@ const generateRadarData = (selectedSkills) => {
 // 个人信息组件
 const PersonalInfo = () => {
   return (
-    <motion.div 
-      className="flex flex-col md:flex-row items-center md:items-start gap-8 p-6 rounded-2xl shadow-lg bg-white dark:bg-gray-800"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
+    <div className="flex flex-col lg:flex-row gap-8">
+      {/* 左侧个人信息卡片 */}
       <motion.div 
-        className="w-40 h-40 rounded-full overflow-hidden border-4 border-blue-500"
-        whileHover={{ scale: 1.05 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        className="w-full lg:w-1/3 p-6 content-card flex flex-col items-center text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
       >
-        <img 
-          src={personalInfo.avatar} 
-          alt={personalInfo.name} 
-          className="w-full h-full object-cover"
-        />
+        <motion.div 
+          className="w-48 h-64 rounded-lg overflow-hidden border-4 border-blue-500 mb-6"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <img 
+            src={personalInfo.avatar} 
+            alt={personalInfo.name} 
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+        
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-md">
+          {personalInfo.name}
+        </h1>
+        <p className="text-xl text-white/90 font-semibold mb-6 drop-shadow-md">
+          {personalInfo.title}
+        </p>
+        
+        {/* 基本信息 - 放在职位标题下方 */}
+        <div className="w-full bg-white/10 backdrop-blur-md p-4 rounded-xl mb-6 border border-white/20">
+          <div className="grid grid-cols-1 gap-3">
+            {personalInfo.details.map((item, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <span className="font-medium text-white/80 flex items-center gap-2">
+                  {item.icon}
+                  {item.label}
+                </span>
+                {item.type === "gitee" && item.url ? (
+                  <a 
+                    href={item.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-white hover:underline flex items-center gap-1"
+                  >
+                    {item.value}
+                    <ExternalLink size={14} />
+                  </a>
+                ) : (
+                  <span className="text-white">{item.value}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </motion.div>
       
-      <div className="flex-1 text-center md:text-left">
-        <motion.h1 
-          className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-        >
-          {personalInfo.name}
-        </motion.h1>
-        <motion.p 
-          className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-        >
-          {personalInfo.title}
-        </motion.p>
-        
-        {/* 个人详细信息 */}
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6 text-left"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-        >
-          {personalInfo.personalDetails.map((detail, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <span className="font-medium text-gray-700 dark:text-gray-300">{detail.label}：</span>
-              <span className="text-gray-600 dark:text-gray-400">{detail.value}</span>
+      {/* 右侧主要信息区域 */}
+      <div className="w-full lg:w-2/3 space-y-6">
+        {/* 研究兴趣和专业技能卡片 */}
+      <motion.div 
+        className="p-6 content-card"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <BookOpen size={20} className="text-white" />
+            研究兴趣与专业技能
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <h3 className="font-semibold text-white/90">研究兴趣</h3>
+              <ul className="space-y-2 pl-5 list-disc text-white/80">
+                <li>大模型微调与优化</li>
+                <li>Agent智能体开发</li>
+                <li>数据自动化处理及业务部署</li>
+                <li>GNSS精密定位与定轨</li>
+              </ul>
             </div>
-          ))}
+            
+            <div className="space-y-2">
+              <h3 className="font-semibold text-white/90">核心技能</h3>
+              <ul className="space-y-2 pl-5 list-disc text-white/80">
+                <li>Python/Fortran编程</li>
+                <li>LoRA微调技术</li>
+                <li>模型部署与服务</li>
+                <li>自动化工作流设计</li>
+                <li>Linux系统开发</li>
+              </ul>
+            </div>
+          </div>
         </motion.div>
         
-        <motion.p 
-          className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-        >
-          {personalInfo.bio}
-        </motion.p>
-        
-        <motion.div 
-          className="flex flex-wrap justify-center md:justify-start gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-        >
-          {personalInfo.contact.map((item, index) => (
-            <a 
-              key={index}
-              href={item.type === "email" ? `mailto:${item.value}` : 
-                    item.type === "phone" ? `tel:${item.value}` : 
-                    `https://${item.value}`}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {item.icon}
-              <span>{item.value}</span>
-            </a>
-          ))}
-        </motion.div>
+         {/* 自我评价卡片 */}
+   <motion.div 
+     className="p-6 content-card"
+     initial={{ opacity: 0, x: 20 }}
+     animate={{ opacity: 1, x: 0 }}
+     transition={{ duration: 0.6, delay: 0.3 }}
+   >
+     <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+       <User size={20} className="text-white" />
+       自我评价
+     </h2>
+     
+     <div className="space-y-3">
+       {selfEvaluation.map((item, index) => (
+         <motion.div 
+           key={index}
+           className="flex items-start gap-3 p-3 bg-white/10 backdrop-blur-md rounded-lg border border-white/20"
+           initial={{ opacity: 0, y: 10 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ delay: index * 0.1 + 0.5, duration: 0.5 }}
+         >
+           <div className="h-6 w-6 rounded-full bg-white/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+             <i className="fa-solid fa-user text-xs"></i>
+           </div>
+           <p className="text-white">
+             <span className="font-medium">{item.category}：</span>
+             {item.content}
+           </p>
+         </motion.div>
+      ))}
+    </div>
+  </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 // 工作经历组件
 const WorkExperience = () => {
   return (
-    <div className="space-y-6">
-      {workExperience.map((exp, index) => (
-        <motion.div 
-          key={exp.id}
-          className="p-6 rounded-xl bg-white dark:bg-gray-800 shadow-lg border-l-4 border-blue-500"
-          initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{exp.position}</h3>
-              <p className="text-blue-600 dark:text-blue-400">{exp.company}</p>
-            </div>
-            <p className="text-gray-500 dark:text-gray-400 mt-2 md:mt-0">{exp.period}</p>
-          </div>
-          
-          <p className="text-gray-600 dark:text-gray-300 mb-4">{exp.description}</p>
-          
-          <ul className="space-y-2">
-            {exp.achievements.map((achievement, idx) => (
-              <motion.li 
-                key={idx} 
-                className="flex items-start gap-2 text-gray-700 dark:text-gray-200"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.5 }}
-              >
-                <i className="fa-solid fa-check-circle text-green-500 mt-1 flex-shrink-0"></i>
-                <span>{achievement}</span>
-              </motion.li>
-            ))}
-          </ul>
-        </motion.div>
-      ))}
-    </div>
-  );
-};
-
-// 教育背景组件
-const Education = () => {
-  const [showCertificates, setShowCertificates] = useState(false);
-  
-  return (
-    <div className="space-y-6">
-      {education.map((edu, index) => (
-        <motion.div 
-          key={edu.id}
-          className="p-6 rounded-xl bg-white dark:bg-gray-800 shadow-lg relative"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ delay: index * 0.2, duration: 0.5 }}
-          // 只有硕士学位才有证书显示功能
-          onMouseEnter={() => index === 0 && setShowCertificates(true)}
-          onMouseLeave={() => index === 0 && setShowCertificates(false)}
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{edu.degree} - {edu.major}</h3>
-              <p className="text-blue-600 dark:text-blue-400">{edu.school}</p>
-            </div>
-            <p className="text-gray-500 dark:text-gray-400 mt-2 md:mt-0">{edu.period}</p>
-          </div>
-          
-          <div className="space-y-2 text-gray-600 dark:text-gray-300">
-            {edu.advisor && <p><strong>导师：</strong>{edu.advisor}</p>}
-            {edu.researchArea && <p><strong>研究方向：</strong>{edu.researchArea}</p>}
-            {index === 0 && (
-              <p className="text-blue-500 text-sm mt-2 italic">
-                鼠标悬停查看硕士毕业证和学位证
-              </p>
-            )}
-          </div>
-          
-          {/* 硕士毕业证和学位证显示 */}
-          {index === 0 && (
-            <AnimatePresence>
-              {showCertificates && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="absolute top-full left-0 mt-4 w-full z-10 grid grid-cols-1 md:grid-cols-2 gap-4"
-                >
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-                    <img
-                      src="/src/assets/images/degree_certificate_1.png"
-                      alt="硕士毕业证"
-                      className="w-full h-auto rounded"
-                    />
-                    <p className="text-center text-sm mt-1 text-gray-600 dark:text-gray-400">硕士毕业证</p>
-                  </div>
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-                    <img
-                      src="/src/assets/images/degree_certificate_2.png"
-                      alt="硕士学位证"
-                      className="w-full h-auto rounded"
-                    />
-                    <p className="text-center text-sm mt-1 text-gray-600 dark:text-gray-400">硕士学位证</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          )}
-        </motion.div>
-      ))}
-      
-      {/* 科研经历 */}
+    <div className="space-y-8">
+      {/* 工作经历标题 */}
       <motion.div
-        className="mt-8"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">在校经历</h3>
-        <div className="space-y-4">
-          {researchExperience.map((exp, index) => (
-            <motion.div
-              key={exp.id}
-              className="p-5 rounded-xl bg-white dark:bg-gray-800 shadow-md border-l-4 border-blue-500"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-            >
-              <h4 className="font-bold text-gray-900 dark:text-white mb-2">{exp.title}</h4>
-              <p className="text-gray-600 dark:text-gray-300 mb-3">{exp.description}</p>
-              {exp.details && (
-                <ul className="space-y-1 text-gray-600 dark:text-gray-300 pl-5 list-disc">
-                  {exp.details.map((detail, idx) => (
-                    <li key={idx}>{detail}</li>
-                  ))}
-                </ul>
-              )}
-            </motion.div>
-          ))}
-        </div>
+         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+           <Briefcase className="text-white" size={20} />
+           工作经历
+        </h3>
       </motion.div>
-    </div>
-  );
-};
-
-// 技术能力组件
-const TechnicalSkills = () => {
-  const [selectedCategory, setSelectedCategory] = useState(technicalSkills[0].category);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
-  
-  const selectedSkills = technicalSkills.find(skill => skill.category === selectedCategory)?.skills || [];
-  const radarData = generateRadarData(selectedSkills);
-  
-  return (
-    <div className="space-y-6">
-      {/* 移动端筛选器 */}
-      <div className="md:hidden">
-        <button 
-          onClick={() => setIsFilterVisible(!isFilterVisible)}
-          className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md"
-        >
-          <span className="font-medium text-gray-900 dark:text-white">选择技术类别：{selectedCategory}</span>
-          <ChevronDown 
-            size={20} 
-            className={`text-gray-500 dark:text-gray-400 transition-transform ${isFilterVisible ? 'rotate-180' : ''}`} 
-          />
-        </button>
-        
-        <AnimatePresence>
-          {isFilterVisible && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden bg-white dark:bg-gray-800 rounded-b-xl shadow-md mt-1"
-            >
-              <div className="p-2">
-                {technicalSkills.map((category) => (
-                  <button
-                    key={category.category}
-                    onClick={() => {
-                      setSelectedCategory(category.category);
-                      setIsFilterVisible(false);
-                    }}
-                    className={`w-full text-left p-3 rounded-lg my-1 ${
-                      selectedCategory === category.category 
-                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' 
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    {category.category}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
       
-      {/* 桌面端筛选器 */}
-      <div className="hidden md:flex gap-2 flex-wrap">
-        {technicalSkills.map((category) => (
-          <motion.button
-            key={category.category}
-            onClick={() => setSelectedCategory(category.category)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === category.category 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-700'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {category.category}
-          </motion.button>
-        ))}
-      </div>
-      
-      {/* 技术能力可视化 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 进度条展示 */}
-        <motion.div 
-          className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">{selectedCategory} 技能水平</h3>
-          <div className="space-y-6">
-            {selectedSkills.map((skill, index) => (
-              <motion.div key={skill.name}
-                initial={{ opacity: 0, width: 0 }}
-                whileInView={{ opacity: 1, width: '100%' }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.8 }}
-              >
-                <div className="flex justify-between mb-1">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">{skill.name}</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{skill.level}%</span>
-                </div>
-                <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <motion.div 
-                    className="h-full bg-blue-600 rounded-full"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.level}%` }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 + 0.3, duration: 1, ease: "easeOut" }}
-                  ></motion.div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-        
-        {/* 雷达图展示 */}
-        <motion.div 
-          className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg flex items-center justify-center"
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <div className="w-full h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart outerRadius={90} width={500} height={300} data={radarData}>
-                <PolarGrid stroke="#e2e8f0" />
-                <PolarAngleAxis 
-                  dataKey="subject" 
-                  tick={{ fill: '#4b5563', fontSize: 12 }}
-                />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                <Radar
-                  name={selectedCategory}
-                  dataKey="A"
-                  stroke="#3b82f6"
-                  fill="#3b82f6"
-                  fillOpacity={0.6}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
-};
-
-// 项目经历组件
-const Projects = () => {
-  return (
-    <div className="space-y-6">
-      {projects.map((project, index) => (
-        <motion.div 
-          key={project.id}
-          className="p-6 rounded-xl bg-white dark:bg-gray-800 shadow-lg"
+      {workExperience.map((exp) => (
+         <motion.div 
+          key={exp.id}
+          className="p-6 content-card"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ delay: index * 0.2, duration: 0.5 }}
-          whileHover={{ y: -5 }}
+          transition={{ duration: 0.5 }}
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
             <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{project.title}</h3>
-              <p className="text-blue-600 dark:text-blue-400">{project.role}</p>
+               <h3 className="text-xl font-bold text-white">{exp.position}</h3>
+               <p className="text-white/90 font-medium">{exp.company}</p>
+             </div>
+             <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-white/80">
+               <Calendar size={16} />
+               <span className="text-sm">{exp.period}</span>
             </div>
-            <p className="text-gray-500 dark:text-gray-400 mt-2 md:mt-0">{project.period}</p>
           </div>
-          
-          <p className="text-gray-600 dark:text-gray-300 mb-4">{project.description}</p>
-          
-          <div className="mb-4">
-            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-2">技术栈：</h4>
-            <div className="flex flex-wrap gap-2">
-              {project.technologies.map((tech, idx) => (
-                <span 
-                  key={idx} 
-                  className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full text-sm"
-                >
-                  {tech}
-                </span>
+           
+           <div className="space-y-4">
+             <h4 className="font-semibold text-white">主要成就：</h4>
+             <ul className="space-y-3">
+               {exp.achievements.map((achievement, idx) => (
+                 <motion.li 
+                   key={idx} 
+                   className="flex items-start gap-3"
+                   initial={{ opacity: 0, x: -10 }}
+                   whileInView={{ opacity: 1, x: 0 }}
+                   viewport={{ once: true }}
+                   transition={{ delay: idx * 0.1, duration: 0.5 }}
+                 >
+                   <div className="h-6 w-6 rounded-full bg-white/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                     <i className="fa-solid fa-check text-xs"></i>
+                   </div>
+                   <span className="text-white/90">{achievement}</span>
+                </motion.li>
               ))}
-            </div>
-          </div>
-          
-          <div>
-            <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-1">成果：</h4>
-            <p className="text-gray-600 dark:text-gray-300">{project.outcomes}</p>
+            </ul>
           </div>
         </motion.div>
       ))}
       
       {/* 实习经历 */}
       <motion.div
-        className="mt-8"
+        className="mt-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">实习经历</h3>
+         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+           <Briefcase className="text-white" size={20} />
+           实习经历
+        </h3>
         <div className="space-y-4">
           {internships.map((intern, index) => (
             <motion.div
               key={intern.id}
-              className="p-6 rounded-xl bg-white dark:bg-gray-800 shadow-lg"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
+               className="p-6 content-card"
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: index * 0.1, duration: 0.5 }}
+             >
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                 <div>
-                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">{intern.position}</h4>
-                  <p className="text-blue-600 dark:text-blue-400">{intern.company}</p>
+                 <h4 className="text-lg font-bold text-white">{intern.position}</h4>
+                 <p className="text-white/90">{intern.company}</p>
+               </div>
+               <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-white/80">
+                 <Calendar size={16} />
+                 <span className="text-sm">{intern.period}</span>
                 </div>
-                <p className="text-gray-500 dark:text-gray-400 mt-2 md:mt-0">{intern.period}</p>
               </div>
               
-              <ul className="space-y-2 text-gray-600 dark:text-gray-300 pl-5 list-disc">
+              <ul className="space-y-3">
                 {intern.achievements.map((achievement, idx) => (
-                  <li key={idx}>{achievement}</li>
+                  <li key={idx} className="flex items-start gap-3">
+                   <div className="h-6 w-6 rounded-full bg-white/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                     <i className="fa-solid fa-check text-xs"></i>
+                   </div>
+                   <span className="text-white/90">{achievement}</span>
+                  </li>
                 ))}
               </ul>
             </motion.div>
@@ -762,52 +546,558 @@ const Projects = () => {
   );
 };
 
+// 教育背景组件
+const Education = () => {
+  const [showCertificates, setShowCertificates] = useState<number | null>(null);
+  
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {education.map((edu, index) => (
+           <motion.div 
+             key={edu.id}
+             className="p-6 content-card relative"
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: true, margin: "-100px" }}
+             transition={{ delay: index * 0.2, duration: 0.5 }}
+              onClick={() => setShowCertificates(edu.id)}
+            >
+            <div className="flex flex-col items-start gap-3 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-10 w-10 rounded-full bg-blue-100/20 text-white flex items-center justify-center">
+                  <GraduationCap size={20} />
+                </div>
+               <h3 className="text-xl font-bold text-white">{edu.degree}</h3>
+             </div>
+             
+             <p className="text-white/90 font-medium">{edu.school}</p>
+             <div className="flex items-center gap-2 text-white/80">
+               <Calendar size={16} />
+               <span>{edu.period}</span>
+             </div>
+           </div>
+           
+           <div className="space-y-3 text-white">
+             <p><strong>专业：</strong>{edu.major}</p>
+             {edu.advisor && <p><strong>导师：</strong>{edu.advisor}</p>}
+             {edu.researchArea && <p><strong>研究方向：</strong>{edu.researchArea}</p>}
+             <p className="text-blue-500 text-sm mt-2 italic">
+                点击查看{edu.degree}毕业证和学位证
+              </p>
+            </div>
+           
+             {/* 学位证书显示 - 优化为全屏遮罩和居中自适应显示 */}
+             <AnimatePresence>
+               {showCertificates === edu.id && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md cursor-pointer"
+                    onClick={() => setShowCertificates(null)}
+                  >
+                    <motion.div
+                      initial={{ scale: 0.95 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="p-6">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-xl font-bold text-gray-800">{edu.degree}证书</h3>
+                          <button 
+                            onClick={() => setShowCertificates(null)}
+                            className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="p-1 bg-white rounded-lg shadow-md">
+                            <img
+                              src={edu.degree === "硕士" ? "/src/images/硕士毕业证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${edu.degree}%20diploma%20certificate%20with%20name%20Xu%20Yan`}
+                              alt={`${edu.degree}毕业证`}
+                              className="w-full h-auto rounded max-h-[65vh] object-contain"
+                            />
+                            <p className="text-center mt-3 font-medium text-gray-700">{edu.school} - {edu.degree}毕业证</p>
+                          </div>
+                           <div className="p-1 bg-white rounded-lg shadow-md">
+                             <img
+                               src={edu.degree === "硕士" ? "/src/images/硕士学位证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${edu.degree}%20degree%20certificate%20with%20name%20Xu%20Yan`}
+                               alt={`${edu.degree}学位证`}
+                               className="w-full h-auto rounded max-h-[65vh] object-contain"
+                             />
+                             <p className="text-center mt-3 font-medium text-gray-700">{edu.school} - {edu.degree}学位证</p>
+                           </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+               )}
+             </AnimatePresence>
+          </motion.div>
+        ))}
+      </div>
+      
+      {/* 科研经历 */}
+      <motion.div
+        className="mt-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+         <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+           <BookOpen className="text-white" size={20} />
+           在校科研经历
+        </h3>
+        
+        <div className="space-y-4">
+          {researchExperience.map((exp, index) => (
+            <motion.div
+              key={exp.id}
+               className="p-6 content-card"
+               initial={{ opacity: 0, x: -20 }}
+               whileInView={{ opacity: 1, x: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: index * 0.1, duration: 0.5 }}
+             >
+               <h4 className="text-lg font-bold text-white mb-3">{exp.title}</h4>
+               <p className="text-white/80 mb-4">{exp.description}</p>
+               
+               {exp.details && (
+                 <ul className="space-y-2">
+                   {exp.details.map((detail, idx) => (
+                     <li key={idx} className="flex items-start gap-3">
+                       <ChevronRight size={18} className="text-white mt-1 flex-shrink-0" />
+                       <span className="text-white/90">{detail}</span>
+                     </li>
+                   ))}
+                 </ul>
+               )}
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// 单个技术概述卡片组件 - 小方框紧凑样式
+interface TechSummaryProps {
+  title: string;
+  description: string;
+  index: number;
+  icon: React.ReactNode;
+}
+
+const TechSummaryCard = ({ title, description, index, icon }: TechSummaryProps) => {
+  return (
+    <motion.div 
+      className="p-4 content-card border-2 border-gray-800 flex flex-col h-full"
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <div className="h-8 w-8 rounded-full bg-blue-100/20 text-white flex items-center justify-center flex-shrink-0">
+          {React.cloneElement(icon as React.ReactElement, { size: 16 })}
+        </div>
+        <h4 className="text-base font-bold text-white">{title}</h4>
+      </div>
+      
+      <p className="text-white/90 text-sm leading-relaxed flex-grow">
+        {description}
+      </p>
+    </motion.div>
+  );
+};
+
+// 技术能力水平展示 - 紧凑风格
+const TechSkillDisplay = ({ skill, index }: { skill: { name: string; level: number }; index: number }) => {
+  return (
+    <motion.div 
+      className="mb-3 last:mb-0"
+      initial={{ opacity: 0, x: -10 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+    >
+      <div className="flex items-center justify-between mb-1">
+        <span className="font-medium text-white">{skill.name}</span>
+        <span className="text-sm text-white/80">{skill.level}%</span>
+      </div>
+      <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+        <motion.div 
+          className="h-full bg-white rounded-full"
+          initial={{ width: 0 }}
+          whileInView={{ width: `${skill.level}%` }}
+          viewport={{ once: true }}
+          transition={{ delay: index * 0.1 + 0.2, duration: 1, ease: "easeOut" }}
+        ></motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+// 技术能力组件
+const TechnicalSkills = () => {
+  const [selectedCategory, setSelectedCategory] = useState(technicalSkills[0]?.category || "编程语言");
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  
+  const selectedSkills = technicalSkills.find(skill => skill.category === selectedCategory)?.skills || [];
+  const radarData = generateRadarData(selectedSkills);
+  
+  return (
+    <div className="space-y-8">
+       {/* 技术能力摘要 */}
+       <motion.div 
+         className="space-y-6"
+         initial={{ opacity: 0, y: 20 }}
+         whileInView={{ opacity: 1, y: 0 }}
+         viewport={{ once: true }}
+         transition={{ duration: 0.5 }}
+       >
+         <h3 className="text-xl font-bold text-white mb-4">技术能力概述</h3>
+         
+          {/* 技术概述卡片组件 - 小方框紧凑布局 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* 核心编程能力 */}
+            <TechSummaryCard 
+              title="核心编程能力" 
+              description="精通Python、Fortran，熟悉C/C++、Shell、MATLAB，具备独立设计开发能力和自动化工程代码经验" 
+              index={0}
+              icon={<Code size={16} />}
+            />
+            
+            {/* 大模型技术 */}
+            <TechSummaryCard 
+              title="大模型技术" 
+              description="精通LoRA微调（peft + transformers），熟练使用Unsloth、LLaMA-Factory微调框架，配合Ollama/vLLM/LM Studio完成7B–70B模型本地化部署、量化与TensorRT加速" 
+              index={1}
+              icon={<Award size={16} />}
+            />
+            
+            {/* 大模型Agent工具 */}
+            <TechSummaryCard 
+              title="大模型Agent工具" 
+              description="熟悉Dify、LangChain Agent平台，能够快速搭建零代码/低代码智能体，实现全流程无人值守的自动化工作流" 
+              index={2}
+              icon={<Briefcase size={16} />}
+            />
+            
+            {/* 系统与开发工具 */}
+            <TechSummaryCard 
+              title="系统与开发工具" 
+              description="Linux重度使用者，可跨Windows/Linux/WSL远程开发与调试；熟练运用VS Code、Cursor、PyCharm等开发工具；用Git管理代码仓库" 
+              index={3}
+              icon={<Globe size={16} />}
+            />
+            
+            {/* 跨平台云端同步工具 */}
+            <TechSummaryCard 
+              title="跨平台云端同步工具" 
+              description="构建基于Onedrive+WebDAV+Zotero的文献管理同步平台，搭建基于WebDAV+Jpolin的多平台笔记同步平台" 
+              index={4}
+              icon={<Github size={16} />}
+            />
+            
+            {/* 科研绘图与办公 */}
+            <TechSummaryCard 
+              title="科研绘图与办公" 
+              description="掌握Microsoft office、Adobe Acrobat、LaTex + MathType公式编辑，熟练Origin、ArcMap、Visio和Photoshop等科研绘图软件" 
+              index={5}
+              icon={<BookOpen size={16} />}
+            />
+          </div>
+       </motion.div>
+      
+      {/* 技术能力详情 - 更紧凑的布局 */}
+      <div className="space-y-6">
+        {/* 移动端筛选器 */}
+        <div className="md:hidden">
+           <button 
+             onClick={() => setIsFilterVisible(!isFilterVisible)}
+             className="w-full flex items-center justify-between p-4 bg-white/10 backdrop-blur-md rounded-xl shadow-md border border-white/20"
+           >
+             <span className="font-medium text-white">选择技术类别：{selectedCategory}</span>
+             <ChevronDown 
+               size={20} 
+               className={`text-white/80 transition-transform ${isFilterVisible ? 'rotate-180' : ''}`} 
+             />
+           </button>
+           
+           <AnimatePresence>
+             {isFilterVisible && (
+               <motion.div
+                 initial={{ opacity: 0, height: 0 }}
+                 animate={{ opacity: 1, height: 'auto' }}
+                 exit={{ opacity: 0, height: 0 }}
+                 className="overflow-hidden bg-white/10 backdrop-blur-md rounded-b-xl shadow-md mt-1 border-x border-b border-white/20"
+               >
+                 <div className="p-2">
+                   {technicalSkills.map((category) => (
+                     <button
+                       key={category.category}
+                       onClick={() => {
+                         setSelectedCategory(category.category);
+                         setIsFilterVisible(false);
+                       }}
+                       className={`w-full text-left p-3 rounded-lg my-1 ${
+                         selectedCategory === category.category 
+                           ? 'bg-white/20 text-white' 
+                           : 'hover:bg-white/10 text-white/80'
+                       }`}
+                     >
+                       {category.category}
+                     </button>
+                   ))}
+                 </div>
+               </motion.div>
+             )}
+           </AnimatePresence>
+        </div>
+        
+        {/* 桌面端筛选器 */}
+        <div className="hidden md:flex gap-3 flex-wrap">
+          {technicalSkills.map((category) => (
+            <motion.button
+               key={category.category}
+               onClick={() => setSelectedCategory(category.category)}
+               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                 selectedCategory === category.category 
+                   ? 'bg-white text-[#845EC2]' 
+                   : 'bg-white/10 text-white/80 hover:bg-white/20'
+               }`}
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
+             >
+               {category.category}
+             </motion.button>
+          ))}
+        </div>
+        
+        {/* 技术能力可视化 - 紧凑布局 */}
+        <motion.div 
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {/* 技术能力列表 - 更紧凑的样式 */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-5">
+            <h3 className="text-xl font-bold text-white mb-4">{selectedCategory} 技能水平</h3>
+            
+            {/* 紧凑的技术能力展示 */}
+            <div className="space-y-3">
+              {selectedSkills.map((skill, index) => (
+                <TechSkillDisplay key={skill.name} skill={skill} index={index} />
+              ))}
+            </div>
+          </div>
+           
+          {/* 雷达图展示 - 保持原有大小但优化布局 */}
+          <div className="content-card rounded-xl flex items-center justify-center p-4">
+            <div className="w-full h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart outerRadius={90} width={500} height={300} data={radarData}>
+                   <PolarGrid stroke="rgba(255, 255, 255, 0.3)" />
+                   <PolarAngleAxis 
+                     dataKey="subject" 
+                     tick={{ fill: 'white', fontSize: 12 }}
+                   />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} />
+                   <Radar
+                     name={selectedCategory}
+                     dataKey="A"
+                     stroke="white"
+                     fill="white"
+                     fillOpacity={0.6}
+                   />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+// 单个项目经历卡片组件 - 论文风格
+interface ProjectProps {
+  project: {
+    id: number;
+    title: string;
+    role: string;
+    period: string;
+    description: string;
+    technologies: string[];
+    outcomes: string;
+  };
+  index: number;
+}
+
+const ProjectCard = ({ project, index }: ProjectProps) => {
+  return (
+    <motion.div 
+      key={project.id}
+      className="p-6 content-card border-2 border-gray-800 mb-6"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+    >
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-3">
+        <div>
+         <h4 className="text-lg font-bold text-white">{project.title}</h4>
+         <p className="text-white/90">{project.role}</p>
+       </div>
+       <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-white/80 self-start">
+         <Calendar size={16} />
+         <span className="text-sm">{project.period}</span>
+        </div>
+      </div>
+      
+       <p className="text-white/80 mb-4">{project.description}</p>
+       
+       <div className="mb-4">
+         <h5 className="font-medium text-white mb-2">技术栈：</h5>
+         <div className="flex flex-wrap gap-2">
+           {project.technologies.map((tech, idx) => (
+             <span 
+               key={idx} 
+               className="px-3 py-1 bg-white/20 text-white rounded-full text-sm"
+             >
+               {tech}
+             </span>
+           ))}
+        </div>
+      </div>
+      
+      <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+         <h5 className="font-medium text-white mb-1">项目成果：</h5>
+         <p className="text-white/90">{project.outcomes}</p>
+      </div>
+    </motion.div>
+  );
+};
+
+// 项目经历组件
+const Projects = () => {
+  return (
+    <div className="space-y-8">
+      <motion.div 
+        className="p-6 bg-white/10 backdrop-blur-md rounded-xl border-2 border-gray-800"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <h3 className="text-xl font-bold text-white mb-6">项目经历</h3>
+        
+        {/* 使用学术论文风格的项目卡片 */}
+        <div className="space-y-6">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} />
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 // 学术成果组件
 const Publications = () => {
-  const [showConferencePhotos, setShowConferencePhotos] = useState([false, false]);
+  const [showConferencePhotos, setShowConferencePhotos] = useState<{[key: string]: boolean}>({});
   
-  const handleConferenceHover = (index, isHovering) => {
-    const newState = [...showConferencePhotos];
-    newState[index] = isHovering;
-    setShowConferencePhotos(newState);
+  const handleConferenceHover = (confId: number, photoIndex: number, isHovering: boolean) => {
+    setShowConferencePhotos(prev => ({
+      ...prev,
+      [`${confId}-${photoIndex}`]: isHovering
+    }));
   };
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">学术论文</h3>
-        <div className="space-y-4">
+         <h3 className="text-xl font-bold text-white mb-6">学术论文</h3>
+         
+        <div className="space-y-6">
           {publications.map((pub, index) => (
             <motion.div 
               key={pub.id}
-              className="p-6 rounded-xl bg-white dark:bg-gray-800 shadow-lg"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-            >
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{pub.title}</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-2">{pub.authors}</p>
-              <div className="space-y-1 text-gray-500 dark:text-gray-400 text-sm">
-                {pub.journal && <p><strong>期刊：</strong>{pub.journal} {pub.volume && `, Vol. ${pub.volume}`}{pub.pages && `, pp. ${pub.pages}`} ({pub.year})</p>}
-                {pub.conference && <p><strong>会议：</strong>{pub.conference}, {pub.publisher && `${pub.publisher},`} {pub.year}</p>}
+               className="p-6 content-card"
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: index * 0.1, duration: 0.5 }}
+             >
+              <div className="flex items-start gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-blue-100/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <BookOpen size={20} />
+                </div>
+                 <h4 className="text-lg font-bold text-white flex-grow">
+                   {pub.title}
+                 </h4>
+               </div>
+               
+               <p className="text-white/90 mb-3">{pub.authors}</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {pub.journal && (
+                  <div className="flex items-start gap-2">
+                       <div className="h-6 w-6 rounded-full bg-white/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                         <i className="fa-solid fa-newspaper text-xs"></i>
+                       </div>
+                       <p className="text-white/80">
+                         <span className="font-medium">期刊：</span>
+                      {pub.journal} {pub.volume && `, Vol. ${pub.volume}`}{pub.pages && `, pp. ${pub.pages}`} ({pub.year})
+                    </p>
+                  </div>
+                )}
+                
+                {pub.conference && (
+                  <div className="flex items-start gap-2">
+                       <div className="h-6 w-6 rounded-full bg-white/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                         <i className="fa-solid fa-users text-xs"></i>
+                       </div>
+                       <p className="text-white/80">
+                         <span className="font-medium">会议：</span>
+                      {pub.conference}, {pub.publisher && `${pub.publisher},`} {pub.year}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex flex-wrap gap-3 items-center">
                 {pub.link && (
                   <a 
                     href={pub.link} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
-                  >
-                    <i className="fa-solid fa-link"></i>
-                    {pub.link}
+                     className="flex items-center gap-1 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+                   >
+                     <ExternalLink size={16} />
+                     <span>查看链接</span>
                   </a>
                 )}
-                {pub.note && <p><strong>备注：</strong>{pub.note}</p>}
+                {pub.note && (
+                   <span className="px-4 py-2 bg-white/10 text-white/90 rounded-lg text-sm">
+                     {pub.note}
+                   </span>
+                )}
               </div>
             </motion.div>
           ))}
@@ -822,47 +1112,266 @@ const Publications = () => {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">学术会议</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+         <h3 className="text-xl font-bold text-white mb-6">学术会议</h3>
+         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {conferences.map((conf, index) => (
             <motion.div
               key={conf.id}
-              className="p-5 rounded-xl bg-white dark:bg-gray-800 shadow-md relative"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              onMouseEnter={() => handleConferenceHover(index, true)}
-              onMouseLeave={() => handleConferenceHover(index, false)}
-            >
-              <h4 className="font-bold text-gray-900 dark:text-white mb-1">{conf.name}</h4>
-              <div className="flex flex-wrap justify-between items-center text-gray-600 dark:text-gray-300">
-                <p>{conf.role}</p>
-                <p className="text-blue-600 dark:text-blue-400">{conf.year}</p>
+               className="p-6 content-card relative"
+               initial={{ opacity: 0, scale: 0.95 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+               transition={{ delay: index * 0.1, duration: 0.5 }}
+             >
+              <div className="flex items-start gap-3 mb-4">
+                <div className="h-10 w-10 rounded-full bg-blue-100/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <i className="fa-solid fa-building-columns text-xl"></i>
+                </div>
+                <div>
+                 <h4 className="font-bold text-white">{conf.name}</h4>
+                 <p className="text-white/90">{conf.role}</p>
+               </div>
               </div>
-              <p className="text-blue-500 text-sm mt-2 italic">
-                鼠标悬停查看会议照片
-              </p>
               
-              {/* 会议照片显示 */}
-              <AnimatePresence>
-                {showConferencePhotos[index] && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="absolute top-full left-0 mt-4 w-full z-10"
-                  >
-                    <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-                      <img
-                        src={`/src/assets/images/conference_${index + 1}.png`}
-                        alt={`${conf.name}照片`}
-                        className="w-full h-auto rounded"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-white/80 self-start mb-4">
+                <Calendar size={16} />
+                <span className="text-sm">{conf.year}</span>
+              </div>
+              
+              <div className="space-y-4">
+                 {conf.name === "中国测绘学会2021学术年会" && (
+                   <>
+                    <div className="relative">
+                      <button 
+                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
+                        onClick={() => handleConferenceHover(conf.id, 1, !showConferencePhotos[`${conf.id}-1`])}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
+                            <i className="fa-solid fa-user"></i>
+                          </div>
+                          <span className="font-medium">个人留影</span>
+                        </div>
+                        <ExternalLink size={18} className="text-white/70" />
+                      </button>
+                         <AnimatePresence>
+                           {showConferencePhotos[`${conf.id}-1`] && (
+                             <motion.div
+                               initial={{ opacity: 0 }}
+                               animate={{ opacity: 1 }}
+                               exit={{ opacity: 0 }}
+                               transition={{ duration: 0.2 }}
+                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                               onClick={() => handleConferenceHover(conf.id, 1, false)}
+                             >
+                               <motion.div
+                                 initial={{ scale: 0.95 }}
+                                 animate={{ scale: 1 }}
+                                 exit={{ scale: 0.95 }}
+                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                 className="w-full max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
+                                 onClick={(e) => e.stopPropagation()}
+                               >
+                                 <div className="p-4">
+                                   <div className="flex justify-between items-center mb-3">
+                                     <h3 className="text-lg font-bold text-gray-800">中国测绘年会个人留影</h3>
+                                     <button 
+                                       onClick={() => handleConferenceHover(conf.id, 1, false)}
+                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+                                     >
+                                       <X size={18} />
+                                     </button>
+                                   </div>
+                                  <div className="p-1 bg-white rounded-lg shadow-md">
+                                    <img
+                                      src="/src/images/中国测绘年会个人留影.jpg"
+                                      alt="中国测绘年会个人留影"
+                                      className="w-full h-auto rounded max-h-[65vh] object-contain"
+                                    />
+                                  </div>
+                                  <p className="text-center mt-3 font-medium text-gray-700 text-sm">中国测绘学会2021学术年会 - 个人留影</p>
+                                 </div>
+                               </motion.div>
+                             </motion.div>
+                           )}
+                         </AnimatePresence>
+                     </div>
+                     
+                    <div className="relative">
+                      <button 
+                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
+                        onClick={() => handleConferenceHover(conf.id, 2, !showConferencePhotos[`${conf.id}-2`])}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
+                            <i className="fa-solid fa-users"></i>
+                          </div>
+                          <span className="font-medium">集体留影</span>
+                        </div>
+                        <ExternalLink size={18} className="text-white/70" />
+                      </button>
+                         <AnimatePresence>
+                           {showConferencePhotos[`${conf.id}-2`] && (
+                             <motion.div
+                               initial={{ opacity: 0 }}
+                               animate={{ opacity: 1 }}
+                               exit={{ opacity: 0 }}
+                               transition={{ duration: 0.2 }}
+                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                               onClick={() => handleConferenceHover(conf.id, 2, false)}
+                             >
+                               <motion.div
+                                 initial={{ scale: 0.95 }}
+                                 animate={{ scale: 1 }}
+                                 exit={{ scale: 0.95 }}
+                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                 className="w-full max-w-3xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
+                                 onClick={(e) => e.stopPropagation()}
+                               >
+                                 <div className="p-4">
+                                   <div className="flex justify-between items-center mb-3">
+                                     <h3 className="text-lg font-bold text-gray-800">中国测绘年会集体留影</h3>
+                                     <button 
+                                       onClick={() => handleConferenceHover(conf.id, 2, false)}
+                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+                                     >
+                                       <X size={18} />
+                                     </button>
+                                   </div>
+                                  <div className="p-1 bg-white rounded-lg shadow-md">
+                                    <img
+                                      src="/src/images/中国测绘年会集体合影.jpg"
+                                      alt="中国测绘年会集体留影"
+                                      className="w-full h-auto rounded max-h-[65vh] object-contain"
+                                    />
+                                  </div>
+                                  <p className="text-center mt-3 font-medium text-gray-700 text-sm">中国测绘学会2021学术年会 - 集体留影</p>
+                                 </div>
+                               </motion.div>
+                             </motion.div>
+                           )}
+                         </AnimatePresence>
+                     </div>
+                   </>
+                 )}
+                 
+                 {conf.name === "大地测量与导航2024综合学术年会" && (
+                   <>
+                    <div className="relative">
+                      <button 
+                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
+                        onClick={() => handleConferenceHover(conf.id, 1, !showConferencePhotos[`${conf.id}-1`])}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
+                            <i className="fa-solid fa-user"></i>
+                          </div>
+                          <span className="font-medium">个人留影</span>
+                        </div>
+                        <ExternalLink size={18} className="text-white/70" />
+                      </button>
+                         <AnimatePresence>
+                           {showConferencePhotos[`${conf.id}-1`] && (
+                             <motion.div
+                               initial={{ opacity: 0 }}
+                               animate={{ opacity: 1 }}
+                               exit={{ opacity: 0 }}
+                               transition={{ duration: 0.2 }}
+                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                               onClick={() => handleConferenceHover(conf.id, 1, false)}
+                             >
+                               <motion.div
+                                 initial={{ scale: 0.95 }}
+                                 animate={{ scale: 1 }}
+                                 exit={{ scale: 0.95 }}
+                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                 className="w-full max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
+                                 onClick={(e) => e.stopPropagation()}
+                               >
+                                 <div className="p-4">
+                                   <div className="flex justify-between items-center mb-3">
+                                     <h3 className="text-lg font-bold text-gray-800">大地测量学术会议个人留影</h3>
+                                     <button 
+                                       onClick={() => handleConferenceHover(conf.id, 1, false)}
+                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+                                     >
+                                       <X size={18} />
+                                     </button>
+                                   </div>
+                                   <div className="p-1 bg-white rounded-lg shadow-md">
+                                     <img
+                                       src="https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=individual%20photo%20at%20Geodesy%20and%20Navigation%20conference&sign=2883bf4f9d62ed2f7b21fcd7c174f683"
+                                       alt="大地测量学术会议个人留影"
+                                       className="w-full h-auto rounded max-h-[65vh] object-contain"
+                                     />
+                                   </div>
+                                   <p className="text-center mt-3 font-medium text-gray-700 text-sm">大地测量与导航2024综合学术年会 - 个人留影</p>
+                                 </div>
+                               </motion.div>
+                             </motion.div>
+                           )}
+                         </AnimatePresence>
+                     </div>
+                     
+                    <div className="relative">
+                      <button 
+                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
+                        onClick={() => handleConferenceHover(conf.id, 2, !showConferencePhotos[`${conf.id}-2`])}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
+                            <i className="fa-solid fa-image"></i>
+                          </div>
+                          <span className="font-medium">海报张贴</span>
+                        </div>
+                        <ExternalLink size={18} className="text-white/70" />
+                      </button>
+                         <AnimatePresence>
+                           {showConferencePhotos[`${conf.id}-2`] && (
+                             <motion.div
+                               initial={{ opacity: 0 }}
+                               animate={{ opacity: 1 }}
+                               exit={{ opacity: 0 }}
+                               transition={{ duration: 0.2 }}
+                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                               onClick={() => handleConferenceHover(conf.id, 2, false)}
+                             >
+                               <motion.div
+                                 initial={{ scale: 0.95 }}
+                                 animate={{ scale: 1 }}
+                                 exit={{ scale: 0.95 }}
+                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                 className="w-full max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
+                                 onClick={(e) => e.stopPropagation()}
+                               >
+                                 <div className="p-4">
+                                   <div className="flex justify-between items-center mb-3">
+                                     <h3 className="text-lg font-bold text-gray-800">大地测量学术会议海报张贴</h3>
+                                     <button 
+                                       onClick={() => handleConferenceHover(conf.id, 2, false)}
+                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+                                     >
+                                       <X size={18} />
+                                     </button>
+                                   </div>
+                                   <div className="p-1 bg-white rounded-lg shadow-md">
+                                     <img
+                                       src="https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=academic%20poster%20presentation%20at%20Geodesy%20conference&sign=4e25a68087455f8add396fd4343972c9"
+                                       alt="大地测量学术会议海报张贴"
+                                       className="w-full h-auto rounded max-h-[65vh] object-contain"
+                                     />
+                                   </div>
+                                   <p className="text-center mt-3 font-medium text-gray-700 text-sm">大地测量与导航2024综合学术年会 - 海报张贴</p>
+                                 </div>
+                               </motion.div>
+                             </motion.div>
+                           )}
+                         </AnimatePresence>
+                     </div>
+                   </>
+                 )}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -876,83 +1385,101 @@ const Awards = () => {
   const [hoveredAward, setHoveredAward] = useState<number | null>(null);
   
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {awards.map((award, index) => (
-          <motion.div 
-            key={award.id}
-            className="p-5 rounded-xl bg-white dark:bg-gray-800 shadow-md flex flex-col relative"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.05, duration: 0.5 }}
-            whileHover={{ y: -3 }}
-            onMouseEnter={() => !award.isScholarship && setHoveredAward(award.id)}
-            onMouseLeave={() => setHoveredAward(null)}
-          >
-            <div className="mb-2">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{award.title}</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">{award.description}</p>
-              {!award.isScholarship && (
-                <p className="text-blue-500 text-sm mt-2 italic">
-                  鼠标悬停查看证书
-                </p>
-              )}
-            </div>
-            <div className="mt-auto pt-2">
-              <span className="text-blue-600 dark:text-blue-400 font-medium">{award.year}</span>
-            </div>
-            
-            {/* 奖项照片显示（非奖学金奖项） */}
-            {!award.isScholarship && (
-              <AnimatePresence>
-                {hoveredAward === award.id && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="absolute top-full left-0 mt-4 w-full z-10"
-                  >
-                    <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-                      <img
-                        src={`/src/assets/images/award_${award.id}.png`}
-                        alt={`${award.title}证书`}
-                        className="w-full h-auto rounded"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            )}
-          </motion.div>
-        ))}
-      </div>
-      
-      {/* 自我评价 */}
-      <motion.div
-        className="mt-8"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">自我评价</h3>
+    <div className="space-y-8">
+       <motion.div
+         className="p-6 content-card"
+         initial={{ opacity: 0, y: 20 }}
+         whileInView={{ opacity: 1, y: 0 }}
+         viewport={{ once: true }}
+         transition={{ duration: 0.5 }}
+       >
+         <h3 className="text-xl font-bold text-white mb-6">获奖荣誉</h3>
+         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selfEvaluation.map((item, index) => (
-            <motion.div
-              key={index}
-              className="p-5 rounded-xl bg-white dark:bg-gray-800 shadow-md"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-            >
-              <h4 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <i className="fa-solid fa-star text-yellow-500"></i>
-                {item.category}
-              </h4>
-              <p className="text-gray-600 dark:text-gray-300">{item.content}</p>
-            </motion.div>
+          {awards.map((award, index) => (
+            <motion.div 
+              key={award.id}
+               className="p-5 content-card relative cursor-pointer"
+               initial={{ opacity: 0, scale: 0.95 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+                transition={{ delay: index * 0.05, duration: 0.5 }}
+                whileHover={{ y: -3, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
+                onClick={() => setHoveredAward(hoveredAward === award.id ? null : award.id)}
+              >
+              <div className="flex items-start gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-yellow-100/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <Award size={20} />
+                </div>
+               <h4 className="font-bold text-white">{award.title}</h4>
+             </div>
+             
+             <p className="text-white/80 text-sm mb-3">{award.description}</p>
+             
+             <p className="text-blue-500 text-xs mb-2 italic">
+                点击查看证书
+              </p>
+              
+              <div className="mt-auto pt-2">
+                <span className="text-white/90 font-medium flex items-center gap-1">
+                  <Calendar size={14} />
+                  {award.year}
+                </span>
+              </div>
+              
+                {/* 奖项证书显示 - 使用和学位证一样的全屏模态框 */}
+                <AnimatePresence>
+                  {hoveredAward === award.id && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md cursor-pointer"
+                      onClick={() => setHoveredAward(null)}
+                    >
+                      <motion.div
+                        initial={{ scale: 0.95 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="p-6">
+                          <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">{award.title}</h3>
+                            <button 
+                              onClick={() => setHoveredAward(null)}
+                              className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+                            >
+                              <X size={20} />
+                            </button>
+                          </div>
+                          <div className="flex justify-center">
+                            <div className="p-1 bg-white rounded-lg shadow-md max-w-3xl w-full">
+                              <img
+                                src={
+                                  award.title === "山东科技大学'优秀研究生'称号" && award.year === "2023年11月" ? "/src/images/2022-2023优秀研究生.png" :
+                                  award.title === "山东科技大学'优秀研究生'称号" && award.year === "2022年11月" ? "/src/images/2021-2022优秀研究生.png" :
+                                  award.title === "'优秀青年志愿者'称号" ? "/src/images/优秀青年志愿者.jpg" :
+                                  award.title === "中国测绘学会2021学术年会志愿服务证书" ? "/src/images/志愿者证书.png" :
+                                  `https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=award%20certificate%20${award.title}`
+                                }
+                                alt={`${award.title}证书`}
+                                className="w-full h-auto rounded max-h-[70vh] object-contain"
+                              />
+                            </div>
+                          </div>
+                          <p className="text-center mt-4 font-medium text-gray-700">{award.title}</p>
+                          <p className="text-center text-sm text-gray-600 mt-1">{award.year}</p>
+                          <p className="text-center text-sm text-gray-500 mt-2">{award.description}</p>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+           </motion.div>
           ))}
         </div>
       </motion.div>
@@ -960,304 +1487,190 @@ const Awards = () => {
   );
 };
 
-// 下载简历按钮
-const DownloadButton = () => {
-  const handleDownload = () => {
-    // 这里简化处理，实际项目中需要实现真实的PDF下载功能
-    alert("简历下载功能已触发，实际项目中将生成并下载PDF文件");
-  };
-
-  return (
-    <motion.button
-      onClick={handleDownload}
-      className="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg flex items-center justify-center z-50"
-      whileHover={{ scale: 1.1, backgroundColor: "#2563eb" }}
-      whileTap={{ scale: 0.9 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1, duration: 0.5 }}
-    >
-      <Download size={24} />
-    </motion.button>
-  );
-};
+// PDF下载功能已移除，根据用户需求不再提供此功能
 
 export default function Home() {
-  const { theme, toggleTheme, isDark } = useTheme();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const sections = useRef({});
+  const [activeTab, setActiveTab] = useState("bio");
 
   // 导航菜单项
   const navItems = [
-    { id: "personal", label: "个人信息", icon: <User size={20} /> },
+    { id: "bio", label: "个人简介", icon: <User size={20} /> },
     { id: "work", label: "工作经历", icon: <Briefcase size={20} /> },
     { id: "education", label: "教育背景", icon: <GraduationCap size={20} /> },
     { id: "skills", label: "技术能力", icon: <Code size={20} /> },
-    { id: "projects", label: "项目与实习", icon: <BookOpen size={20} /> },
+    { id: "projects", label: "项目经历", icon: <BookOpen size={20} /> },
     { id: "publications", label: "学术成果", icon: <BookOpen size={20} /> },
-    { id: "awards", label: "获奖与评价", icon: <Award size={20} /> }
+    { id: "awards", label: "获奖与荣誉", icon: <Award size={20} /> }
   ];
 
-  // 滚动到指定区域
-  const scrollToSection = (id) => {
-    sections.current[id]?.scrollIntoView({ behavior: "smooth" });
-    setMobileMenuOpen(false);
-  };
-
-  // 监听滚动，高亮当前导航项
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 100;
-
-      for (const id of Object.keys(sections.current)) {
-        const section = sections.current[id];
-        if (section) {
-          const { offsetTop, offsetHeight } = section;
-          if (
-            scrollPosition >= offsetTop &&
-            scrollPosition < offsetTop + offsetHeight
-          ) {
-            document.querySelectorAll(".nav-link").forEach((link) => {
-              link.classList.remove("active");
-            });
-            document
-              .querySelector(`.nav-link[href="#${id}"]`)
-              ?.classList.add("active");
-            break;
-          }
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
-    <div className={`min-h-screen ${isDark ? 'dark bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* 顶部导航栏 */}
-      <header className="fixed top-0 left-0 right-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md z-40 shadow-md">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
-              <User size={24} className="text-white" />
+    <div className="min-h-screen dark text-white">
+        {/* 顶部导航栏 - 添加黑色下边框 */}
+        <header className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md z-40 shadow-md border-b-2 border-black">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                <User size={24} className="text-white" />
+              </div>
+               <h1 className="text-xl font-bold text-white hidden sm:block">
+                 许焱 - 大模型算法工程师
+               </h1>
             </div>
-            <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 hidden sm:block">
-              许焱 - 大模型算法工程师
-            </h1>
-          </div>
 
-          {/* 桌面端导航 */}
-          <nav className="hidden md:block">
-            <ul className="flex gap-6">
+            {/* 桌面端导航 */}
+            <nav className="hidden md:flex gap-1 flex-wrap mt-2 md:mt-0">
               {navItems.map((item) => (
-                <li key={item.id}>
-                  <button
-                    onClick={() => scrollToSection(item.id)}
-                    className="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    {item.label}
-                  </button>
-                </li>
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                   activeTab === item.id 
+                     ? 'bg-white/20 text-white border-b-2 border-white' 
+                     : 'hover:bg-white/10 text-white/80'
+                 }`}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </button>
               ))}
-            </ul>
-          </nav>
+            </nav>
 
-          {/* 主题切换按钮 */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            aria-label={theme === "light" ? "切换到深色模式" : "切换到浅色模式"}
-          >
-            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-
-          {/* 移动端菜单按钮 */}
-          <button
-            className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "关闭菜单" : "打开菜单"}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            {/* 移除了主题切换按钮，默认使用黑色主题 */}
+          </div>
+          
+          {/* 移动端导航菜单 */}
+          <div className="md:hidden mt-3">
+            <div className="relative">
+              <button
+                className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md"
+                onClick={() => document.getElementById('mobile-menu')?.classList.toggle('hidden')}
+                aria-label="打开菜单"
+              >
+               <span className="font-medium text-white">
+                 {navItems.find(item => item.id === activeTab)?.label || "菜单"}
+               </span>
+               <ChevronDown size={20} className="text-white/80" />
+             </button>
+             
+              <div id="mobile-menu" className="hidden mt-2 absolute left-0 right-0 z-50 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                <ul className="py-2">
+                  {navItems.map((item) => (
+                    <li key={item.id}>
+                      <button
+                        onClick={() => {
+                          setActiveTab(item.id);
+                          document.getElementById('mobile-menu')?.classList.add('hidden');
+                        }}
+                         className={`w-full flex items-center gap-3 px-6 py-3 text-left ${
+                           activeTab === item.id 
+                             ? 'bg-white/20 text-white' 
+                             : 'text-white/80 hover:bg-white/10'
+                         }`}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* 移动端导航菜单 */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
-            >
-              <ul className="py-2">
-                {navItems.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => scrollToSection(item.id)}
-                      className="w-full flex items-center gap-3 px-6 py-3 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
 
-      {/* 主内容区域 */}
-      <main className="container mx-auto px-4 pt-24 pb-20">
-        {/* 个人信息区域 */}
-        <section 
-          ref={(el) => (sections.current.personal = el)} 
-          id="personal" 
-          className="mb-16"
-        >
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-8 pb-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <User className="text-blue-600 dark:text-blue-400" size={28} />
-            <span>个人信息</span>
-          </motion.h2>
-          <PersonalInfo />
-        </section>
-
-        {/* 工作经历区域 */}
-        <section 
-          ref={(el) => (sections.current.work = el)} 
-          id="work" 
-          className="mb-16"
-        >
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-8 pb-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Briefcase className="text-blue-600 dark:text-blue-400" size={28} />
-            <span>工作经历</span>
-          </motion.h2>
-          <WorkExperience />
-        </section>
-
-        {/* 教育背景区域 */}
-        <section 
-          ref={(el) => (sections.current.education = el)} 
-          id="education" 
-          className="mb-16"
-        >
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-8 pb-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <GraduationCap className="text-blue-600 dark:text-blue-400" size={28} />
-            <span>教育背景</span>
-          </motion.h2>
-          <Education />
-        </section>
-
-        {/* 技术能力区域 */}
-        <section 
-          ref={(el) => (sections.current.skills = el)} 
-          id="skills" 
-          className="mb-16"
-        >
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-8 pb-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Code className="text-blue-600 dark:text-blue-400" size={28} />
-            <span>技术能力</span>
-          </motion.h2>
-          <TechnicalSkills />
-        </section>
-
-        {/* 项目经历区域 */}
-        <section 
-          ref={(el) => (sections.current.projects = el)} 
-          id="projects" 
-          className="mb-16"
-        >
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-8 pb-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <BookOpen className="text-blue-600 dark:text-blue-400" size={28} />
-            <span>项目与实习</span>
-          </motion.h2>
-          <Projects />
-        </section>
-
-        {/* 学术成果区域 */}
-        <section 
-          ref={(el) => (sections.current.publications = el)} 
-          id="publications" 
-          className="mb-16"
-        >
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-8 pb-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <BookOpen className="text-blue-600 dark:text-blue-400" size={28} />
-            <span>学术成果</span>
-          </motion.h2>
-          <Publications />
-        </section>
-
-        {/* 获奖荣誉区域 */}
-        <section 
-          ref={(el) => (sections.current.awards = el)} 
-          id="awards" 
-          className="mb-16"
-        >
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold mb-8 pb-2 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Award className="text-blue-600 dark:text-blue-400" size={28} />
-            <span>获奖与评价</span>
-          </motion.h2>
-          <Awards />
-        </section>
+       {/* 主内容区域 */}
+       <main className="container mx-auto px-4 pt-32 pb-20">
+         {/* 内容标签页带半透明背景以增强可读性 */}
+        <div className="space-y-8">
+          {activeTab === "bio" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+               <div className="text-contrast"><PersonalInfo /></div>
+            </motion.div>
+          )}
+          
+          {activeTab === "work" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+               <div className="text-contrast"><WorkExperience /></div>
+            </motion.div>
+          )}
+          
+          {activeTab === "education" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+               <div className="text-contrast"><Education /></div>
+            </motion.div>
+          )}
+          
+          {activeTab === "skills" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+               <div className="text-contrast"><TechnicalSkills /></div>
+            </motion.div>
+          )}
+          
+          {activeTab === "projects" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+               <div className="text-contrast"><Projects /></div>
+            </motion.div>
+          )}
+          
+          {activeTab === "publications" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+               <div className="text-contrast"><Publications /></div>
+            </motion.div>
+          )}
+          
+          {activeTab === "awards" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+               <div className="text-contrast"><Awards /></div>
+            </motion.div>
+          )}
+        </div>
       </main>
 
-      {/* 页脚 */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-6">
+       {/* 页脚 - 添加黑色上边框 */}
+        <footer className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-t-2 border-black py-6">
         <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-          <p>© {new Date().getFullYear()} 许焱 - 大模型算法工程师</p>
-          <p className="mt-2 text-sm">
-            使用 React, Tailwind CSS 和 TypeScript 构建
-          </p>
+           <p className="text-white">© {new Date().getFullYear()} 许焱 - 大模型算法工程师</p>
+           <p className="mt-2 text-sm text-white/80">
+             使用 React, Tailwind CSS 和 TypeScript 构建
+           </p>
+          <div className="mt-4 flex justify-center space-x-4">
+            <div className="h-3 w-3 rounded-full bg-[#845EC2]"></div>
+            <div className="h-3 w-3 rounded-full bg-[#44B98A]"></div>
+          </div>
         </div>
       </footer>
 
-      {/* 下载简历按钮 */}
-      <DownloadButton />
+       {/* 移除了PDF下载功能，根据用户需求不再提供此功能 */}
     </div>
   );
 }
