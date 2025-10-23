@@ -12,7 +12,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
   const personalInfo = {
     name: "许焱",
     title: "大模型算法工程师",
-    avatar: "src/images/许焱.jpg",
+    avatar: "/images/许焱.jpg",
     // 按照要求的顺序排列：出生年月、民族、籍贯、政治面貌、学历、邮箱、电话、gitee
     details: [
     { label: "出生年月", value: "1999.08.18", type: "birthday", icon: <Calendar size={20} /> },
@@ -546,9 +546,89 @@ const WorkExperience = () => {
   );
 };
 
+// 证书图片组件 - 支持加载状态、错误处理、缩放
+interface CertificateImageProps {
+  src: string;
+  alt: string;
+  label: string;
+}
+
+const CertificateImage = ({ src, alt, label }: CertificateImageProps) => {
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [imageScale, setImageScale] = useState(1);
+  
+  return (
+    <div className="flex flex-col h-full">
+      <div className="relative bg-gray-100 rounded-lg overflow-hidden flex-1 flex items-center justify-center">
+        {/* 加载状态 */}
+        {imageLoading && !imageError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 z-10">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+              <p className="text-gray-700 text-sm font-medium">加载证书图片中...</p>
+            </div>
+          </div>
+        )}
+        
+        {/* 错误状态 */}
+        {imageError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center py-16 px-4 text-center bg-red-50 z-10">
+            <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mb-3">
+              <X size={32} className="text-red-500" />
+            </div>
+            <h4 className="text-sm font-bold text-gray-800 mb-2">图片加载失败</h4>
+            <button
+              onClick={() => {
+                setImageError(false);
+                setImageLoading(true);
+              }}
+              className="px-4 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              重试加载
+            </button>
+          </div>
+        )}
+        
+        {/* 图片显示 */}
+        <motion.div
+          className="relative cursor-zoom-in flex items-center justify-center w-full h-full"
+          onClick={() => setImageScale(imageScale === 1 ? 1.2 : 1)}
+          animate={{ scale: imageScale }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <img
+            src={src}
+            alt={alt}
+            className="max-w-full max-h-full object-contain rounded"
+            onLoad={() => setImageLoading(false)}
+            onError={() => {
+              setImageLoading(false);
+              setImageError(true);
+            }}
+            style={{ 
+              opacity: imageLoading ? 0 : 1,
+              transition: 'opacity 0.3s ease-in-out'
+            }}
+          />
+        </motion.div>
+        
+        {/* 缩放提示 */}
+        {!imageLoading && !imageError && (
+          <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm z-20">
+            {imageScale === 1 ? '点击放大' : '点击缩小'}
+          </div>
+        )}
+      </div>
+      <p className="text-center mt-2 font-medium text-gray-700 text-xs">{label}</p>
+    </div>
+  );
+};
+
 // 教育背景组件
 const Education = () => {
   const [showCertificates, setShowCertificates] = useState<number | null>(null);
+  const selectedEdu = education.find(edu => edu.id === showCertificates);
   
   return (
     <div className="space-y-8">
@@ -556,92 +636,119 @@ const Education = () => {
         {education.map((edu, index) => (
            <motion.div 
              key={edu.id}
-             className="p-6 content-card relative"
+             className="p-6 content-card relative overflow-hidden border-2 border-transparent hover:border-blue-500/50 transition-all duration-300"
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: true, margin: "-100px" }}
              transition={{ delay: index * 0.2, duration: 0.5 }}
-              onClick={() => setShowCertificates(edu.id)}
+             whileHover={{ 
+               y: -5, 
+               boxShadow: "0 20px 40px -10px rgba(59, 130, 246, 0.3)",
+               scale: 1.02
+             }}
             >
             <div className="flex flex-col items-start gap-3 mb-4">
               <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-blue-100/20 text-white flex items-center justify-center">
-                  <GraduationCap size={20} />
-                </div>
+                <motion.div 
+                  className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 text-white flex items-center justify-center shadow-lg"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <GraduationCap size={24} />
+                </motion.div>
                <h3 className="text-xl font-bold text-white">{edu.degree}</h3>
              </div>
              
              <p className="text-white/90 font-medium">{edu.school}</p>
              <div className="flex items-center gap-2 text-white/80">
-               <Calendar size={16} />
+               <Calendar size={16} className="text-blue-400" />
                <span>{edu.period}</span>
              </div>
            </div>
            
-           <div className="space-y-3 text-white">
+           <div className="space-y-3 text-white mb-4">
              <p><strong>专业：</strong>{edu.major}</p>
              {edu.advisor && <p><strong>导师：</strong>{edu.advisor}</p>}
              {edu.researchArea && <p><strong>研究方向：</strong>{edu.researchArea}</p>}
-             <p className="text-blue-500 text-sm mt-2 italic">
-                点击查看{edu.degree}毕业证和学位证
-              </p>
             </div>
-           
-             {/* 学位证书显示 - 优化为全屏遮罩和居中自适应显示 */}
-             <AnimatePresence>
-               {showCertificates === edu.id && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md cursor-pointer"
-                    onClick={() => setShowCertificates(null)}
-                  >
-                    <motion.div
-                      initial={{ scale: 0.95 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="p-6">
-                        <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-xl font-bold text-gray-800">{edu.degree}证书</h3>
-                          <button 
-                            onClick={() => setShowCertificates(null)}
-                            className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
-                          >
-                            <X size={20} />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="p-1 bg-white rounded-lg shadow-md">
-                            <img
-                              src={edu.degree === "硕士" ? "/src/images/硕士毕业证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${edu.degree}%20diploma%20certificate%20with%20name%20Xu%20Yan`}
-                              alt={`${edu.degree}毕业证`}
-                              className="w-full h-auto rounded max-h-[65vh] object-contain"
-                            />
-                            <p className="text-center mt-3 font-medium text-gray-700">{edu.school} - {edu.degree}毕业证</p>
-                          </div>
-                           <div className="p-1 bg-white rounded-lg shadow-md">
-                             <img
-                               src={edu.degree === "硕士" ? "/src/images/硕士学位证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${edu.degree}%20degree%20certificate%20with%20name%20Xu%20Yan`}
-                               alt={`${edu.degree}学位证`}
-                               className="w-full h-auto rounded max-h-[65vh] object-contain"
-                             />
-                             <p className="text-center mt-3 font-medium text-gray-700">{edu.school} - {edu.degree}学位证</p>
-                           </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </motion.div>
-               )}
-             </AnimatePresence>
+            
+            <motion.button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowCertificates(edu.id);
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full text-blue-400 text-xs font-medium w-fit cursor-pointer border border-blue-500/30 hover:from-blue-500/30 hover:to-purple-500/30 transition-all"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ExternalLink size={14} />
+              <span>点击查看{edu.degree}证书</span>
+            </motion.button>
+            
+            {/* 悬浮效果装饰 */}
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-purple-500/10 rounded-full blur-2xl -z-10"></div>
           </motion.div>
         ))}
       </div>
+      
+      {/* 学位证书显示 - 移到外层，避免被卡片的overflow-hidden影响 */}
+      <AnimatePresence>
+        {showCertificates !== null && selectedEdu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-lg"
+            onClick={() => setShowCertificates(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-full max-w-6xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 头部 */}
+              <div className="flex justify-between items-center p-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <GraduationCap size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">{selectedEdu.degree}证书</h3>
+                    <p className="text-sm text-white/90">{selectedEdu.school}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowCertificates(null)}
+                  className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200 hover:rotate-90"
+                  aria-label="关闭"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              {/* 证书内容 */}
+              <div className="p-4 overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[calc(90vh-100px)] overflow-y-auto">
+                  <CertificateImage
+                    src={selectedEdu.degree === "硕士" ? "/images/硕士毕业证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${selectedEdu.degree}%20diploma%20certificate%20with%20name%20Xu%20Yan`}
+                    alt={`${selectedEdu.degree}毕业证`}
+                    label={`${selectedEdu.school} - ${selectedEdu.degree}毕业证`}
+                  />
+                  <CertificateImage
+                    src={selectedEdu.degree === "硕士" ? "/images/硕士学位证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${selectedEdu.degree}%20degree%20certificate%20with%20name%20Xu%20Yan`}
+                    alt={`${selectedEdu.degree}学位证`}
+                    label={`${selectedEdu.school} - ${selectedEdu.degree}学位证`}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* 科研经历 */}
       <motion.div
@@ -1013,15 +1120,128 @@ const Projects = () => {
   );
 };
 
+// 会议照片组件 - 带图片加载优化
+interface ConferencePhotoProps {
+  title: string;
+  src: string;
+  alt: string;
+  onClose: () => void;
+}
+
+const ConferencePhoto = ({ title, src, alt, onClose }: ConferencePhotoProps) => {
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [imageScale, setImageScale] = useState(1);
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-lg"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 头部 */}
+        <div className="flex justify-between items-center p-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <BookOpen size={20} />
+            </div>
+            <h3 className="text-lg font-bold">{title}</h3>
+          </div>
+          <button 
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200 hover:rotate-90"
+            aria-label="关闭"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        {/* 图片内容区域 */}
+        <div className="p-4 flex items-center justify-center" style={{ height: 'calc(90vh - 100px)' }}>
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden w-full h-full flex items-center justify-center">
+            {/* 加载状态 */}
+            {imageLoading && !imageError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 z-10">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-500 border-t-transparent"></div>
+                  <p className="text-gray-700 text-base font-medium">加载照片中...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* 错误状态 */}
+            {imageError && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center py-20 px-6 text-center bg-red-50 z-10">
+                <div className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                  <X size={40} className="text-red-500" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-800 mb-2">照片加载失败</h4>
+                <p className="text-gray-600 mb-4">抱歉，照片暂时无法显示</p>
+                <button
+                  onClick={() => {
+                    setImageError(false);
+                    setImageLoading(true);
+                  }}
+                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                  重试加载
+                </button>
+              </div>
+            )}
+            
+            {/* 图片显示 */}
+            <motion.div
+              className="relative cursor-zoom-in flex items-center justify-center w-full h-full p-4"
+              onClick={() => setImageScale(imageScale === 1 ? 1.2 : 1)}
+              animate={{ scale: imageScale }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <img
+                src={src}
+                alt={alt}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                onLoad={() => setImageLoading(false)}
+                onError={() => {
+                  setImageLoading(false);
+                  setImageError(true);
+                }}
+                style={{ 
+                  opacity: imageLoading ? 0 : 1,
+                  transition: 'opacity 0.3s ease-in-out'
+                }}
+              />
+            </motion.div>
+            
+            {/* 缩放提示 */}
+            {!imageLoading && !imageError && (
+              <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1.5 rounded-full text-xs backdrop-blur-sm z-20">
+                {imageScale === 1 ? '点击放大' : '点击缩小'}
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 // 学术成果组件
 const Publications = () => {
-  const [showConferencePhotos, setShowConferencePhotos] = useState<{[key: string]: boolean}>({});
+  const [selectedPhoto, setSelectedPhoto] = useState<{title: string, src: string, alt: string} | null>(null);
   
-  const handleConferenceHover = (confId: number, photoIndex: number, isHovering: boolean) => {
-    setShowConferencePhotos(prev => ({
-      ...prev,
-      [`${confId}-${photoIndex}`]: isHovering
-    }));
+  const handlePhotoClick = (title: string, src: string, alt: string) => {
+    setSelectedPhoto({ title, src, alt });
   };
   
   return (
@@ -1118,7 +1338,7 @@ const Publications = () => {
           {conferences.map((conf, index) => (
             <motion.div
               key={conf.id}
-               className="p-6 content-card relative"
+               className="p-6 content-card relative overflow-hidden"
                initial={{ opacity: 0, scale: 0.95 }}
                whileInView={{ opacity: 1, scale: 1 }}
                viewport={{ once: true }}
@@ -1139,236 +1359,88 @@ const Publications = () => {
                 <span className="text-sm">{conf.year}</span>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                  {conf.name === "中国测绘学会2021学术年会" && (
                    <>
-                    <div className="relative">
-                      <button 
-                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
-                        onClick={() => handleConferenceHover(conf.id, 1, !showConferencePhotos[`${conf.id}-1`])}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
-                            <i className="fa-solid fa-user"></i>
-                          </div>
-                          <span className="font-medium">个人留影</span>
-                        </div>
-                        <ExternalLink size={18} className="text-white/70" />
-                      </button>
-                         <AnimatePresence>
-                           {showConferencePhotos[`${conf.id}-1`] && (
-                             <motion.div
-                               initial={{ opacity: 0 }}
-                               animate={{ opacity: 1 }}
-                               exit={{ opacity: 0 }}
-                               transition={{ duration: 0.2 }}
-                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-                               onClick={() => handleConferenceHover(conf.id, 1, false)}
-                             >
-                               <motion.div
-                                 initial={{ scale: 0.95 }}
-                                 animate={{ scale: 1 }}
-                                 exit={{ scale: 0.95 }}
-                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                 className="w-full max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
-                                 onClick={(e) => e.stopPropagation()}
-                               >
-                                 <div className="p-4">
-                                   <div className="flex justify-between items-center mb-3">
-                                     <h3 className="text-lg font-bold text-gray-800">中国测绘年会个人留影</h3>
-                                     <button 
-                                       onClick={() => handleConferenceHover(conf.id, 1, false)}
-                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
-                                     >
-                                       <X size={18} />
-                                     </button>
-                                   </div>
-                                  <div className="p-1 bg-white rounded-lg shadow-md">
-                                    <img
-                                      src="/src/images/中国测绘年会个人留影.jpg"
-                                      alt="中国测绘年会个人留影"
-                                      className="w-full h-auto rounded max-h-[65vh] object-contain"
-                                    />
-                                  </div>
-                                  <p className="text-center mt-3 font-medium text-gray-700 text-sm">中国测绘学会2021学术年会 - 个人留影</p>
-                                 </div>
-                               </motion.div>
-                             </motion.div>
-                           )}
-                         </AnimatePresence>
-                     </div>
+                    <motion.button 
+                      className="w-full p-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white rounded-xl hover:from-indigo-500/30 hover:to-purple-500/30 transition-all duration-300 text-left flex items-center justify-between border border-indigo-500/30"
+                      onClick={() => handlePhotoClick("中国测绘年会个人留影", "/images/中国测绘年会个人留影.jpg", "中国测绘学会2021学术年会 - 个人留影")}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <motion.div 
+                          className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg"
+                          whileHover={{ rotate: 360 }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <i className="fa-solid fa-user"></i>
+                        </motion.div>
+                        <span className="font-medium">个人留影</span>
+                      </div>
+                      <ExternalLink size={18} className="text-indigo-400" />
+                    </motion.button>
                      
-                    <div className="relative">
-                      <button 
-                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
-                        onClick={() => handleConferenceHover(conf.id, 2, !showConferencePhotos[`${conf.id}-2`])}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
-                            <i className="fa-solid fa-users"></i>
-                          </div>
-                          <span className="font-medium">集体留影</span>
-                        </div>
-                        <ExternalLink size={18} className="text-white/70" />
-                      </button>
-                         <AnimatePresence>
-                           {showConferencePhotos[`${conf.id}-2`] && (
-                             <motion.div
-                               initial={{ opacity: 0 }}
-                               animate={{ opacity: 1 }}
-                               exit={{ opacity: 0 }}
-                               transition={{ duration: 0.2 }}
-                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-                               onClick={() => handleConferenceHover(conf.id, 2, false)}
-                             >
-                               <motion.div
-                                 initial={{ scale: 0.95 }}
-                                 animate={{ scale: 1 }}
-                                 exit={{ scale: 0.95 }}
-                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                 className="w-full max-w-3xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
-                                 onClick={(e) => e.stopPropagation()}
-                               >
-                                 <div className="p-4">
-                                   <div className="flex justify-between items-center mb-3">
-                                     <h3 className="text-lg font-bold text-gray-800">中国测绘年会集体留影</h3>
-                                     <button 
-                                       onClick={() => handleConferenceHover(conf.id, 2, false)}
-                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
-                                     >
-                                       <X size={18} />
-                                     </button>
-                                   </div>
-                                  <div className="p-1 bg-white rounded-lg shadow-md">
-                                    <img
-                                      src="/src/images/中国测绘年会集体合影.jpg"
-                                      alt="中国测绘年会集体留影"
-                                      className="w-full h-auto rounded max-h-[65vh] object-contain"
-                                    />
-                                  </div>
-                                  <p className="text-center mt-3 font-medium text-gray-700 text-sm">中国测绘学会2021学术年会 - 集体留影</p>
-                                 </div>
-                               </motion.div>
-                             </motion.div>
-                           )}
-                         </AnimatePresence>
-                     </div>
+                    <motion.button 
+                      className="w-full p-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white rounded-xl hover:from-indigo-500/30 hover:to-purple-500/30 transition-all duration-300 text-left flex items-center justify-between border border-indigo-500/30"
+                      onClick={() => handlePhotoClick("中国测绘年会集体留影", "/images/中国测绘年会集体合影.jpg", "中国测绘学会2021学术年会 - 集体留影")}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <motion.div 
+                          className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg"
+                          whileHover={{ rotate: 360 }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <i className="fa-solid fa-users"></i>
+                        </motion.div>
+                        <span className="font-medium">集体留影</span>
+                      </div>
+                      <ExternalLink size={18} className="text-indigo-400" />
+                    </motion.button>
                    </>
                  )}
                  
                  {conf.name === "大地测量与导航2024综合学术年会" && (
                    <>
-                    <div className="relative">
-                      <button 
-                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
-                        onClick={() => handleConferenceHover(conf.id, 1, !showConferencePhotos[`${conf.id}-1`])}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
-                            <i className="fa-solid fa-user"></i>
-                          </div>
-                          <span className="font-medium">个人留影</span>
-                        </div>
-                        <ExternalLink size={18} className="text-white/70" />
-                      </button>
-                         <AnimatePresence>
-                           {showConferencePhotos[`${conf.id}-1`] && (
-                             <motion.div
-                               initial={{ opacity: 0 }}
-                               animate={{ opacity: 1 }}
-                               exit={{ opacity: 0 }}
-                               transition={{ duration: 0.2 }}
-                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-                               onClick={() => handleConferenceHover(conf.id, 1, false)}
-                             >
-                               <motion.div
-                                 initial={{ scale: 0.95 }}
-                                 animate={{ scale: 1 }}
-                                 exit={{ scale: 0.95 }}
-                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                 className="w-full max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
-                                 onClick={(e) => e.stopPropagation()}
-                               >
-                                 <div className="p-4">
-                                   <div className="flex justify-between items-center mb-3">
-                                     <h3 className="text-lg font-bold text-gray-800">大地测量学术会议个人留影</h3>
-                                     <button 
-                                       onClick={() => handleConferenceHover(conf.id, 1, false)}
-                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
-                                     >
-                                       <X size={18} />
-                                     </button>
-                                   </div>
-                                   <div className="p-1 bg-white rounded-lg shadow-md">
-                                     <img
-                                       src="https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=individual%20photo%20at%20Geodesy%20and%20Navigation%20conference&sign=2883bf4f9d62ed2f7b21fcd7c174f683"
-                                       alt="大地测量学术会议个人留影"
-                                       className="w-full h-auto rounded max-h-[65vh] object-contain"
-                                     />
-                                   </div>
-                                   <p className="text-center mt-3 font-medium text-gray-700 text-sm">大地测量与导航2024综合学术年会 - 个人留影</p>
-                                 </div>
-                               </motion.div>
-                             </motion.div>
-                           )}
-                         </AnimatePresence>
-                     </div>
+                    <motion.button 
+                      className="w-full p-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white rounded-xl hover:from-indigo-500/30 hover:to-purple-500/30 transition-all duration-300 text-left flex items-center justify-between border border-indigo-500/30"
+                      onClick={() => handlePhotoClick("大地测量学术会议个人留影", "/images/大地测量年会个人留影.jpg", "大地测量与导航2024综合学术年会 - 个人留影")}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <motion.div 
+                          className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg"
+                          whileHover={{ rotate: 360 }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <i className="fa-solid fa-user"></i>
+                        </motion.div>
+                        <span className="font-medium">个人留影</span>
+                      </div>
+                      <ExternalLink size={18} className="text-indigo-400" />
+                    </motion.button>
                      
-                    <div className="relative">
-                      <button 
-                        className="w-full p-4 bg-white/10 text-white rounded-xl hover:bg-white/20 transition-all duration-300 text-left flex items-center justify-between"
-                        onClick={() => handleConferenceHover(conf.id, 2, !showConferencePhotos[`${conf.id}-2`])}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-blue-500/30 flex items-center justify-center">
-                            <i className="fa-solid fa-image"></i>
-                          </div>
-                          <span className="font-medium">海报张贴</span>
-                        </div>
-                        <ExternalLink size={18} className="text-white/70" />
-                      </button>
-                         <AnimatePresence>
-                           {showConferencePhotos[`${conf.id}-2`] && (
-                             <motion.div
-                               initial={{ opacity: 0 }}
-                               animate={{ opacity: 1 }}
-                               exit={{ opacity: 0 }}
-                               transition={{ duration: 0.2 }}
-                               className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-                               onClick={() => handleConferenceHover(conf.id, 2, false)}
-                             >
-                               <motion.div
-                                 initial={{ scale: 0.95 }}
-                                 animate={{ scale: 1 }}
-                                 exit={{ scale: 0.95 }}
-                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                 className="w-full max-w-2xl max-h-[85vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
-                                 onClick={(e) => e.stopPropagation()}
-                               >
-                                 <div className="p-4">
-                                   <div className="flex justify-between items-center mb-3">
-                                     <h3 className="text-lg font-bold text-gray-800">大地测量学术会议海报张贴</h3>
-                                     <button 
-                                       onClick={() => handleConferenceHover(conf.id, 2, false)}
-                                       className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
-                                     >
-                                       <X size={18} />
-                                     </button>
-                                   </div>
-                                   <div className="p-1 bg-white rounded-lg shadow-md">
-                                     <img
-                                       src="https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=academic%20poster%20presentation%20at%20Geodesy%20conference&sign=4e25a68087455f8add396fd4343972c9"
-                                       alt="大地测量学术会议海报张贴"
-                                       className="w-full h-auto rounded max-h-[65vh] object-contain"
-                                     />
-                                   </div>
-                                   <p className="text-center mt-3 font-medium text-gray-700 text-sm">大地测量与导航2024综合学术年会 - 海报张贴</p>
-                                 </div>
-                               </motion.div>
-                             </motion.div>
-                           )}
-                         </AnimatePresence>
-                     </div>
+                    <motion.button 
+                      className="w-full p-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white rounded-xl hover:from-indigo-500/30 hover:to-purple-500/30 transition-all duration-300 text-left flex items-center justify-between border border-indigo-500/30"
+                      onClick={() => handlePhotoClick("大地测量学术会议海报张贴", "/images/大地测量年会海报张贴.jpg", "大地测量与导航2024综合学术年会 - 海报张贴")}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <motion.div 
+                          className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg"
+                          whileHover={{ rotate: 360 }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <i className="fa-solid fa-image"></i>
+                        </motion.div>
+                        <span className="font-medium">海报张贴</span>
+                      </div>
+                      <ExternalLink size={18} className="text-indigo-400" />
+                    </motion.button>
                    </>
                  )}
               </div>
@@ -1376,13 +1448,167 @@ const Publications = () => {
           ))}
         </div>
       </motion.div>
+      
+      {/* 照片模态框 */}
+      <AnimatePresence>
+        {selectedPhoto !== null && (
+          <ConferencePhoto
+            title={selectedPhoto.title}
+            src={selectedPhoto.src}
+            alt={selectedPhoto.alt}
+            onClose={() => setSelectedPhoto(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  );
+};
+
+// 单个奖项证书组件 - 带图片加载优化
+interface AwardCertificateProps {
+  award: {
+    id: number;
+    title: string;
+    year: string;
+    description: string;
+  };
+  onClose: () => void;
+}
+
+const AwardCertificate = ({ award, onClose }: AwardCertificateProps) => {
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const [imageScale, setImageScale] = useState(1);
+  
+  // 获取证书图片路径
+  const getImageSrc = () => {
+    if (award.title === "山东科技大学'优秀研究生'称号" && award.year === "2023年11月") {
+      return "/images/2022-2023优秀研究生.png";
+    }
+    if (award.title === "山东科技大学'优秀研究生'称号" && award.year === "2022年11月") {
+      return "/images/2021-2022优秀研究生.png";
+    }
+    if (award.title === "'优秀青年志愿者'称号") {
+      return "/images/优秀青年志愿者.jpg";
+    }
+    if (award.title === "中国测绘学会2021学术年会志愿服务证书") {
+      return "/images/志愿者证书.png";
+    }
+    if (award.title === "组织'睿飞杯'2022年山东科技大学无人机测绘创新智能大赛") {
+      return "/images/组织无人机智能大赛.jpg";
+    }
+    return `https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=award%20certificate%20${award.title}`;
+  };
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-lg"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 头部 */}
+        <div className="flex justify-between items-center p-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <Award size={20} />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">{award.title}</h3>
+              <p className="text-sm text-white/90">{award.year}</p>
+            </div>
+          </div>
+          <button 
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200 hover:rotate-90"
+            aria-label="关闭"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        {/* 图片内容区域 */}
+        <div className="p-4 flex items-center justify-center" style={{ height: 'calc(90vh - 100px)' }}>
+          <div className="relative bg-gray-100 rounded-xl overflow-hidden w-full h-full flex items-center justify-center">
+            {/* 加载状态 */}
+            {imageLoading && !imageError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50 z-10">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-yellow-500 border-t-transparent"></div>
+                  <p className="text-gray-700 text-base font-medium">加载证书图片中...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* 错误状态 */}
+            {imageError && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center py-20 px-6 text-center bg-red-50 z-10">
+                <div className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                  <X size={40} className="text-red-500" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-800 mb-2">图片加载失败</h4>
+                <p className="text-gray-600 mb-4">抱歉，证书图片暂时无法显示</p>
+                <button
+                  onClick={() => {
+                    setImageError(false);
+                    setImageLoading(true);
+                  }}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  重试加载
+                </button>
+              </div>
+            )}
+            
+            {/* 图片显示 */}
+            <motion.div
+              className="relative cursor-zoom-in flex items-center justify-center w-full h-full p-4"
+              onClick={() => setImageScale(imageScale === 1 ? 1.2 : 1)}
+              animate={{ scale: imageScale }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <img
+                src={getImageSrc()}
+                alt={`${award.title}证书`}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                onLoad={() => setImageLoading(false)}
+                onError={() => {
+                  setImageLoading(false);
+                  setImageError(true);
+                }}
+                style={{ 
+                  opacity: imageLoading ? 0 : 1,
+                  transition: 'opacity 0.3s ease-in-out'
+                }}
+              />
+            </motion.div>
+            
+            {/* 缩放提示 */}
+            {!imageLoading && !imageError && (
+              <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1.5 rounded-full text-xs backdrop-blur-sm z-20">
+                {imageScale === 1 ? '点击放大' : '点击缩小'}
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
 // 获奖荣誉组件
 const Awards = () => {
-  const [hoveredAward, setHoveredAward] = useState<number | null>(null);
+  const [selectedAward, setSelectedAward] = useState<number | null>(null);
   
   return (
     <div className="space-y-8">
@@ -1399,90 +1625,66 @@ const Awards = () => {
           {awards.map((award, index) => (
             <motion.div 
               key={award.id}
-               className="p-5 content-card relative cursor-pointer"
+               className="p-5 content-card relative overflow-hidden border-2 border-transparent hover:border-yellow-500/50 transition-all duration-300"
                initial={{ opacity: 0, scale: 0.95 }}
                whileInView={{ opacity: 1, scale: 1 }}
                viewport={{ once: true }}
                 transition={{ delay: index * 0.05, duration: 0.5 }}
-                whileHover={{ y: -3, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-                onClick={() => setHoveredAward(hoveredAward === award.id ? null : award.id)}
+                whileHover={{ 
+                  y: -5, 
+                  boxShadow: "0 20px 40px -10px rgba(234, 179, 8, 0.3)",
+                  scale: 1.02
+                }}
               >
               <div className="flex items-start gap-3 mb-3">
-                <div className="h-10 w-10 rounded-full bg-yellow-100/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
-                  <Award size={20} />
-                </div>
-               <h4 className="font-bold text-white">{award.title}</h4>
+                <motion.div 
+                  className="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Award size={24} />
+                </motion.div>
+               <h4 className="font-bold text-white text-base leading-tight">{award.title}</h4>
              </div>
              
-             <p className="text-white/80 text-sm mb-3">{award.description}</p>
+             <p className="text-white/80 text-sm mb-4 ml-15">{award.description}</p>
              
-             <p className="text-blue-500 text-xs mb-2 italic">
-                点击查看证书
-              </p>
+             <div className="flex items-center justify-between mt-4">
+               <span className="text-white/90 font-medium flex items-center gap-2 text-sm">
+                 <Calendar size={16} className="text-yellow-400" />
+                 {award.year}
+               </span>
+               
+               <motion.button
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   setSelectedAward(award.id);
+                 }}
+                 className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full text-yellow-400 text-xs font-medium cursor-pointer border border-yellow-500/30 hover:from-yellow-500/30 hover:to-orange-500/30 transition-all"
+                 whileHover={{ scale: 1.05 }}
+                 whileTap={{ scale: 0.95 }}
+               >
+                 <ExternalLink size={14} />
+                 <span>查看证书</span>
+               </motion.button>
+             </div>
               
-              <div className="mt-auto pt-2">
-                <span className="text-white/90 font-medium flex items-center gap-1">
-                  <Calendar size={14} />
-                  {award.year}
-                </span>
-              </div>
-              
-                {/* 奖项证书显示 - 使用和学位证一样的全屏模态框 */}
-                <AnimatePresence>
-                  {hoveredAward === award.id && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md cursor-pointer"
-                      onClick={() => setHoveredAward(null)}
-                    >
-                      <motion.div
-                        initial={{ scale: 0.95 }}
-                        animate={{ scale: 1 }}
-                        exit={{ scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-xl border border-white shadow-2xl"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="p-6">
-                          <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold text-gray-800">{award.title}</h3>
-                            <button 
-                              onClick={() => setHoveredAward(null)}
-                              className="p-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
-                            >
-                              <X size={20} />
-                            </button>
-                          </div>
-                          <div className="flex justify-center">
-                            <div className="p-1 bg-white rounded-lg shadow-md max-w-3xl w-full">
-                              <img
-                                src={
-                                  award.title === "山东科技大学'优秀研究生'称号" && award.year === "2023年11月" ? "/src/images/2022-2023优秀研究生.png" :
-                                  award.title === "山东科技大学'优秀研究生'称号" && award.year === "2022年11月" ? "/src/images/2021-2022优秀研究生.png" :
-                                  award.title === "'优秀青年志愿者'称号" ? "/src/images/优秀青年志愿者.jpg" :
-                                  award.title === "中国测绘学会2021学术年会志愿服务证书" ? "/src/images/志愿者证书.png" :
-                                  `https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=award%20certificate%20${award.title}`
-                                }
-                                alt={`${award.title}证书`}
-                                className="w-full h-auto rounded max-h-[70vh] object-contain"
-                              />
-                            </div>
-                          </div>
-                          <p className="text-center mt-4 font-medium text-gray-700">{award.title}</p>
-                          <p className="text-center text-sm text-gray-600 mt-1">{award.year}</p>
-                          <p className="text-center text-sm text-gray-500 mt-2">{award.description}</p>
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+              {/* 悬浮效果装饰 */}
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-yellow-400/10 to-orange-500/10 rounded-full blur-2xl -z-10"></div>
            </motion.div>
           ))}
         </div>
       </motion.div>
+      
+      {/* 证书模态框 */}
+      <AnimatePresence>
+        {selectedAward !== null && (
+          <AwardCertificate
+            award={awards.find(a => a.id === selectedAward)!}
+            onClose={() => setSelectedAward(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
