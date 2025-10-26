@@ -1485,6 +1485,9 @@ const AwardCertificate = ({ award, onClose }: AwardCertificateProps) => {
     if (award.title === "山东科技大学'优秀研究生'称号" && award.year === "2023年11月") {
       return "/images/2022-2023优秀研究生.png";
     }
+    if (award.title === "山东科技大学'优秀毕业生'称号" && award.year === "2024年06月") {
+      return "/images/优秀毕业研究生.png";
+    }
     if (award.title === "山东科技大学'优秀研究生'称号" && award.year === "2022年11月") {
       return "/images/2021-2022优秀研究生.png";
     }
