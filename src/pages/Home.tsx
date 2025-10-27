@@ -220,7 +220,7 @@ const internships = [
 const awards = [
   { id: 1, title: "山东科技大学'优秀毕业生'称号", year: "2024年06月", description: "学习与科研能力表现突出", isScholarship: false },
   { id: 2, title: "山东科技大学'优秀研究生'称号", year: "2023年11月", description: "学术成果突出", isScholarship: false },
-  { id: 3, title: "研究生一等学业奖学金", year: "2023年11月", description: "综合成绩第2位,共43人", isScholarship: true },
+  { id: 3, title: "研究生一等学业奖学金", year: "2023年11月", description: "综合成绩第4位,共43人", isScholarship: true },
   { id: 4, title: "山东科技大学'优秀研究生'称号", year: "2022年11月", description: "学习成绩优异", isScholarship: false },
   { id: 5, title: "研究生二等学业奖学金", year: "2022年11月", description: "综合成绩第10位,共43人", isScholarship: true },
   { id: 6, title: "中国测绘学会2021学术年会志愿服务证书", year: "2021年10月", description: "承担中国测绘学会志愿者", isScholarship: false },
@@ -1496,6 +1496,12 @@ const AwardCertificate = ({ award, onClose }: AwardCertificateProps) => {
     }
     if (award.title === "中国测绘学会2021学术年会志愿服务证书") {
       return "/images/志愿者证书.png";
+    }
+    if (award.title === "研究生一等学业奖学金" && award.year === "2023年11月") {
+      return "/images/2022-2023学年硕士奖学金.png";
+    }
+    if (award.title === "研究生二等学业奖学金" && award.year === "2022年11月") {
+      return "/images/2021-2022学年硕士奖学金.png";
     }
     if (award.title === "组织'睿飞杯'2022年山东科技大学无人机测绘创新智能大赛") {
       return "/images/组织无人机智能大赛.jpg";
