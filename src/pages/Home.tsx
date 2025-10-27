@@ -1506,7 +1506,7 @@ const AwardCertificate = ({ award, onClose }: AwardCertificateProps) => {
     if (award.title === "组织'睿飞杯'2022年山东科技大学无人机测绘创新智能大赛") {
       return "/images/组织无人机智能大赛.jpg";
     }
-    return `https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=award%20certificate%20${award.title}`;
+    return "/images/error.png";
   };
   
   return (
