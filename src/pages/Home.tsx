@@ -734,12 +734,20 @@ const Education = () => {
               <div className="p-4 overflow-hidden">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[calc(90vh-100px)] overflow-y-auto">
                   <CertificateImage
-                    src={selectedEdu.degree === "硕士" ? "/images/硕士毕业证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${selectedEdu.degree}%20diploma%20certificate%20with%20name%20Xu%20Yan`}
+                    src={
+                      selectedEdu.degree === "硕士" ? "/images/硕士毕业证书.jpg" :
+                      selectedEdu.degree === "本科" ? "/images/本科毕业证书.jpg" :
+                      `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${selectedEdu.degree}%20diploma%20certificate%20with%20name%20Xu%20Yan`
+                    }
                     alt={`${selectedEdu.degree}毕业证`}
                     label={`${selectedEdu.school} - ${selectedEdu.degree}毕业证`}
                   />
                   <CertificateImage
-                    src={selectedEdu.degree === "硕士" ? "/images/硕士学位证书.jpg" : `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${selectedEdu.degree}%20degree%20certificate%20with%20name%20Xu%20Yan`}
+                    src={
+                      selectedEdu.degree === "硕士" ? "/images/硕士学位证书.jpg" :
+                      selectedEdu.degree === "本科" ? "/images/本科学位证书.jpg" :
+                      `https://space.coze.cn/api/coze_space/gen_image?image_size=portrait_4_3&prompt=${selectedEdu.degree}%20degree%20certificate%20with%20name%20Xu%20Yan`
+                    }
                     alt={`${selectedEdu.degree}学位证`}
                     label={`${selectedEdu.school} - ${selectedEdu.degree}学位证`}
                   />
