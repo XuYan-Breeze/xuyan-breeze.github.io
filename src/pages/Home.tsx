@@ -108,7 +108,7 @@ const projects = [
     id: 1,
     title: "SDCORS 数据自动化处理及分析系统升级",
     role: "项目负责人（后期维护与优化）",
-    period: "2019-2023年（硕士期间）",
+    period: "2021-2023年（硕士期间）",
     description: "负责SDCORS数据自动化处理及分析系统的后期维护与优化",
     technologies: ["Linux", "GAMIT", "Bernese", "Python"],
     outcomes: "基于Python开发了GNSS数据处理自动化，实现数据自动下载解压、自动完成GNSS软件配置，自动求取解算精度"
@@ -125,7 +125,8 @@ const projects = [
   {
     id: 3,
     title: "大气波导反演系统",
-    role: "自研开发",period: "2024年9月（工作期间）",
+    role: "自研开发",
+    period: "2024年9月（工作期间）",
     description: "自研并开发大气波导反演系统，基于ERA5与掩星干湿廓线，实现接地/悬空波导自动识别与绘图",
     technologies: ["Python", "气象数据处理", "数据可视化"],
     outcomes: "实现了大气波导现象的自动识别与可视化展示"
