@@ -13,4 +13,8 @@ function getPlugins() {
 
 export default defineConfig({
   plugins: getPlugins(),
+  base: '/', // GitHub Pages 根路径配置
+  build: {
+    outDir: 'dist',
+  },
 });
