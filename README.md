@@ -166,142 +166,82 @@ pnpm run build
    - 等待 DNS 传播完成
 
 ### 方法三：使用 GitHub Pages 部署
+1. 仓库名称
 
-1. **配置 GitHub Actions**
+   仓库命名为：xuyan-breeze.github.io，网站部署为 https://xuyan-breeze.github.io/
+2. **配置 GitHub Actions**
    在项目根目录创建 `.github/workflows/deploy.yml`：
    ```yaml
-   name: Deploy to GitHub Pages
-   
+   name: Deploy Vite React to GitHub Pages
+
    on:
-     push:
-       branches: [ main ]
-   
+   push:
+      branches:
+         - master
+         - main
+   workflow_dispatch:
+
+   permissions:
+   contents: read
+   pages: write
+   id-token: write
+
+   concurrency:
+   group: "pages"
+   cancel-in-progress: false
+
    jobs:
-     build-and-deploy:
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v3
-         
+   build:
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout
+         uses: actions/checkout@v4
+
+         - name: Setup pnpm
+         uses: pnpm/action-setup@v4
+         with:
+            version: latest
+
          - name: Setup Node.js
-           uses: actions/setup-node@v3
-           with:
-             node-version: '18'
-             cache: 'pnpm'
-         
-         - name: Install pnpm
-           run: npm install -g pnpm
-         
+         uses: actions/setup-node@v4
+         with:
+            node-version: '20'
+            cache: 'pnpm'
+
          - name: Install dependencies
-           run: pnpm install
-         
+         run: pnpm install --frozen-lockfile
+
          - name: Build
-           run: pnpm run build
-         
+         run: pnpm run build
+
+         - name: Setup Pages
+         uses: actions/configure-pages@v5
+
+         - name: Upload artifact
+         uses: actions/upload-pages-artifact@v3
+         with:
+            path: './dist'  # ✅ Vite 构建输出目录
+
+   deploy:
+      environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+      runs-on: ubuntu-latest
+      needs: build
+      steps:
          - name: Deploy to GitHub Pages
-           uses: peaceiris/actions-gh-pages@v3
-           with:
-             github_token: ${{ secrets.GITHUB_TOKEN }}
-             publish_dir: ./dist/static
+         id: deployment
+         uses: actions/deploy-pages@v4
    ```
 
-2. **启用 GitHub Pages**
+3. **启用 GitHub Pages**
    - 在 GitHub 仓库中，进入 "Settings" → "Pages"
-   - 选择 "GitHub Actions" 作为源
-   - 推送代码到 main 分支触发部署
+   - 选择 "Deploy from a branch" 作为源
+   - 选择 "mater/docs"
 
-3. **自定义域名设置**
+4. **自定义域名设置**
    - 在 `public` 目录下创建 `CNAME` 文件，内容为您的域名
    - 在域名服务商处配置 CNAME 记录指向 `username.github.io`
-
-## 域名购买与配置
-
-### 1. 域名购买
-
-**推荐域名注册商：**
-- **阿里云**：https://www.aliyun.com（国内用户推荐）
-- **腾讯云**：https://cloud.tencent.com
-- **GoDaddy**：https://www.godaddy.com（国际用户）
-- **Namecheap**：https://www.namecheap.com
-
-**域名选择建议：**
-- 使用 `.com` 后缀（最通用）
-- 包含个人姓名或专业领域
-- 简短易记，避免特殊字符
-- 示例：`xuyan-resume.com`、`xuyan-portfolio.com`
-
-### 2. DNS 配置
-
-**方法一：使用域名注册商的 DNS**
-1. 登录域名管理面板
-2. 找到 DNS 管理或域名解析
-3. 添加记录：
-   - **A记录**：`@` → `Vercel/Netlify提供的IP地址`
-   - **CNAME记录**：`www` → `your-site.vercel.app`
-
-**方法二：使用 Cloudflare（推荐）**
-1. 注册 [Cloudflare](https://cloudflare.com) 账号
-2. 添加您的域名到 Cloudflare
-3. 更新域名注册商的 nameserver 为 Cloudflare 提供的地址
-4. 在 Cloudflare 中配置 DNS 记录
-
-### 3. SSL 证书配置
-
-**自动配置（推荐）：**
-- Vercel、Netlify 等平台自动提供免费 SSL 证书
-- 域名验证通过后自动启用 HTTPS
-
-**手动配置：**
-- 使用 Let's Encrypt 免费证书
-- 在服务器上安装 certbot 工具
-- 运行 `certbot --nginx` 自动配置
-
-## 部署后优化
-
-### 1. 性能优化
-```bash
-# 启用 gzip 压缩
-# 在 nginx 配置中添加：
-gzip on;
-gzip_types text/css application/javascript image/svg+xml;
-
-# 设置缓存策略
-location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-}
-```
-
-### 2. SEO 优化
-在 `public/index.html` 中添加：
-```html
-<meta name="description" content="许焱 - 大模型算法工程师个人简历">
-<meta name="keywords" content="算法工程师,大模型,Python,机器学习">
-<meta property="og:title" content="许焱 - 大模型算法工程师">
-<meta property="og:description" content="专业的大模型算法工程师，精通Python、机器学习等技术">
-```
-
-### 3. 监控与分析
-- 使用 Google Analytics 跟踪访问数据
-- 配置 Google Search Console 监控搜索表现
-- 使用 Vercel Analytics 或 Netlify Analytics 查看性能数据
-
-## 常见问题解决
-
-### 1. 域名无法访问
-- 检查 DNS 记录是否正确配置
-- 等待 DNS 传播（最多48小时）
-- 使用 `nslookup your-domain.com` 检查解析
-
-### 2. HTTPS 证书问题
-- 确保域名已正确解析
-- 检查证书是否已自动签发
-- 清除浏览器缓存重新访问
-
-### 3. 网站加载缓慢
-- 启用 CDN 加速
-- 优化图片大小和格式
-- 使用 WebP 格式图片
-- 启用浏览器缓存
 
 ## 维护与更新
 
@@ -311,14 +251,6 @@ location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
 pnpm run build
 git add .
 git commit -m "更新简历内容"
-git push origin main
+git push github master
 # 自动触发部署流程
 ```
-
-### 2. 定期检查
-- 每月检查网站可访问性
-- 监控域名到期时间
-- 备份重要文件和配置
-- 更新依赖包版本
-
-通过以上步骤，您就可以将个人简历网站成功发布到互联网，并配置自己的专属域名了！
