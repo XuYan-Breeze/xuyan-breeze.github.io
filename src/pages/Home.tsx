@@ -188,6 +188,20 @@ const publications = [
   }
 ];
 
+// 专利发明
+const patents = [
+  {
+    id: 1,
+    title: "基于掩星数据同化的数值模式大气导预报方法及装置",
+    authors: "程艳,许焱,付乃锋,等",
+    country: "中国",
+    number: "ZL 2025 1 1612932.6",
+    type: "P",
+    date: "2026-02-03",
+    image: "/images/专利.png"
+  }
+];
+
 // 学术会议
 const conferences = [
   {
@@ -1328,6 +1342,82 @@ const Publications = () => {
                      {pub.note}
                    </span>
                 )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+      
+      {/* 专利发明 */}
+      <motion.div
+        className="mt-8"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+         <h3 className="text-xl font-bold text-white mb-6">专利发明</h3>
+         
+        <div className="space-y-6">
+          {patents.map((patent, index) => (
+            <motion.div 
+              key={patent.id}
+               className="p-6 content-card"
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: index * 0.1, duration: 0.5 }}
+             >
+              <div className="flex items-start gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-green-100/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <Award size={20} />
+                </div>
+                 <h4 className="text-lg font-bold text-white flex-grow">
+                   {patent.title}
+                 </h4>
+               </div>
+               
+               <p className="text-white/90 mb-3">{patent.authors}</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="flex items-start gap-2">
+                  <div className="h-6 w-6 rounded-full bg-white/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <i className="fa-solid fa-certificate text-xs"></i>
+                  </div>
+                  <p className="text-white/80">
+                    <span className="font-medium">专利号：</span>
+                    {patent.number}
+                  </p>
+                </div>
+                
+                <div className="flex items-start gap-2">
+                  <div className="h-6 w-6 rounded-full bg-white/20 text-white flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <Calendar size={16} />
+                  </div>
+                  <p className="text-white/80">
+                    <span className="font-medium">授权日期：</span>
+                    {patent.date}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <p className="text-white/80">
+                  <span className="font-medium">专利引用：</span>
+                  {patent.authors}.{patent.title}:{patent.country},{patent.number}[{patent.type}].{patent.date}.
+                </p>
+              </div>
+              
+              <div className="flex flex-wrap gap-3 items-center">
+                <motion.button
+                  onClick={() => handlePhotoClick("专利证书", patent.image, patent.title)}
+                  className="flex items-center gap-1 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ExternalLink size={16} />
+                  <span>查看专利证书</span>
+                </motion.button>
               </div>
             </motion.div>
           ))}
