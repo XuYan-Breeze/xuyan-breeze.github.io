@@ -11,7 +11,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
   // 个人信息
   const personalInfo = {
     name: "许焱",
-    title: "大模型算法工程师",
+    title: "算法工程师",
     avatar: "/images/许焱.jpg",
     // 按照要求的顺序排列：出生年月、民族、籍贯、政治面貌、学历、邮箱、电话、gitee
     details: [
@@ -1825,7 +1825,7 @@ export default function Home() {
                 <User size={24} className="text-white" />
               </div>
                <h1 className="text-xl font-bold text-white hidden sm:block">
-                 许焱 - 大模型算法工程师
+                 许焱 - 算法工程师
                </h1>
             </div>
 
@@ -1970,7 +1970,7 @@ export default function Home() {
        {/* 页脚 - 添加黑色上边框 */}
         <footer className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-t-2 border-black py-6">
         <div className="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-           <p className="text-white">© {new Date().getFullYear()} 许焱 - 大模型算法工程师</p>
+           <p className="text-white">© {new Date().getFullYear()} 许焱 - 算法工程师</p>
            <p className="mt-2 text-sm text-white/80">
              使用 React, Tailwind CSS 和 TypeScript 构建
            </p>
